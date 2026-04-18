@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Output artifacts regenerate from `analyzer.py analyze examples/*.md`.
+# Comment this line if you'd rather ship pre-built reports in the repo.
+# output/reports/

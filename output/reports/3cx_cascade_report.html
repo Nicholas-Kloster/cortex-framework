@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>3CX DesktopApp Supply-Chain Cascade (March 2023, CVE-2023-29059) — Authorization Context Analysis — Cortex Report</title>
+<style>
+:root { color-scheme: dark; }
+body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width: 960px;
+       margin: 2rem auto; padding: 0 1rem; background:#0d1117; color:#e6edf3; }
+h1, h2 { border-bottom:1px solid #30363d; padding-bottom:.3rem; }
+code, pre { background:#161b22; padding:.1rem .3rem; border-radius:4px; }
+table { border-collapse: collapse; width:100%; margin: 1rem 0; }
+th, td { border:1px solid #30363d; padding:.5rem .6rem; vertical-align: top; text-align:left; }
+th { background:#161b22; }
+blockquote { color:#8b949e; border-left:3px solid #30363d; margin:.5rem 0; padding:.2rem .8rem; }
+.sev-critical { color:#ff6b6b; font-weight:700; }
+.sev-high     { color:#ff6b6b; font-weight:700; }
+.sev-medium   { color:#ffb86c; font-weight:600; }
+.sev-low      { color:#f1fa8c; }
+.sev-informational { color:#6272a4; }
+.meta { color:#8b949e; font-size:.9rem; }
+ul li { margin:.2rem 0; }
+</style>
+</head>
+<body>
+  <h1>Cortex Analysis Report</h1>
+  <p class="meta"><strong>Subject:</strong> 3CX DesktopApp Supply-Chain Cascade (March 2023, CVE-2023-29059) — Authorization Context Analysis<br>
+  <strong>Analyzed:</strong> 2026-04-18T17:14:58.963786Z<br>
+  <strong>Source:</strong> <code>examples/3cx_cascade.md</code></p>
+
+  <h2>Summary</h2>
+  <ul>
+    <li>Severity: <span class="sev-critical">🔴 Critical</span></li>
+    <li>Operations (skeleton): 13</li>
+    <li>Authorization violations: 10</li>
+    <li>Context notes: 11</li>
+    <li>Skeleton → Violation gap: -3</li>
+  </ul>
+
+  <h2>Skeleton vs. Violations</h2>
+  <blockquote>The gap between what code <em>does</em> and what it <em>assumes the right to do</em> is the attack surface.</blockquote>
+  <table>
+    <thead><tr><th>#</th><th>Skeleton</th><th>Violation</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>A Lazarus Group subcluster (variously tracked as UNC4736, LABYRINTH CHOLLIMA) compromises Trading Technologies&#x27; X_TRADER application, a deprecated futures-trading client, and distributes a trojanized installer labeled `X_TRADER_r7.17.90p608.exe` bearing a valid but expired Trading Technologies code-signing certificate</td><td>Assumes right to compromise Trading Technologies&#x27; legacy software distribution (an application that had reached end-of-life and should not have been in common use) and use it as a long-tail delivery vehicle against specific downstream targets</td></tr>
+      <tr><td>2</td><td>A 3CX employee downloads and installs the trojanized X_TRADER application on their personal workstation, unaware the software has been backdoored</td><td>Assumes right to ride a prior compromise (Trading Technologies / X_TRADER) into an unrelated downstream target (3CX) by exploiting the fact that a 3CX employee was also a Trading Technologies user — a dependency that existed only in the human operator, not in any machine-readable relationship</td></tr>
+      <tr><td>3</td><td>The backdoor on the employee&#x27;s workstation establishes persistence and eventually harvests corporate credentials or tokens that the employee uses to access 3CX&#x27;s build infrastructure</td><td>Assumes right to move from a personal-workstation compromise into the employee&#x27;s corporate identity and from there into 3CX&#x27;s build pipeline, exploiting blended personal/work device use</td></tr>
+      <tr><td>4</td><td>The attacker moves laterally from the employee&#x27;s compromise into 3CX&#x27;s build environment</td><td>Assumes right to modify the build artifacts of a second software vendor and have them signed with that vendor&#x27;s own valid EV certificate, laundering attacker code through an intact and reputationally untainted trust chain</td></tr>
+      <tr><td>5</td><td>The attacker modifies the build output for the 3CX DesktopApp (versions 18.12.407 and 18.12.416 for Windows, 18.11.1213 and later for macOS) to include malicious DLLs (`ffmpeg.dll`, `d3dcompiler_47.dll`) that are loaded by the otherwise-legitimate `3CXDesktopApp.exe`</td><td>Assumes right to distribute the trojanized DesktopApp to ~12 million users across ~600,000 organizations through 3CX&#x27;s normal update infrastructure, then later select which specific organizations receive the follow-on stage</td></tr>
+      <tr><td>6</td><td>The modified DesktopApp is built, code-signed with 3CX&#x27;s own valid Extended Validation certificate, and published through 3CX&#x27;s standard customer update channel to an installed base of ~12 million desktop users across ~600,000 customer organizations</td><td>Assumes right to host attacker C2 configuration on GitHub, conscripting a third-party platform into the delivery chain</td></tr>
+      <tr><td>7</td><td>On execution, the malicious `ffmpeg.dll` decrypts shellcode embedded in `d3dcompiler_47.dll`, which sleeps for seven days before activating (dormancy to defeat sandbox analysis)</td><td>Assumes right to use valid-at-sign-time code-signing certificates from two separate vendors (Trading Technologies, 3CX) as trust laundering layers in a single compound operation</td></tr>
+      <tr><td>8</td><td>The payload downloads an icon file from a GitHub repository (attacker-controlled account in the `iconstorages` organization); the icon file contains AES-encrypted C2 configuration appended after a valid PNG header (steganography)</td><td>Assumes right to harvest browser state, credentials, and corporate data from any organization that installed 3CX as their business telephony and conferencing platform</td></tr>
+      <tr><td>9</td><td>C2 contact is established and a second-stage infostealer (&quot;ICONIC Stealer&quot; on Windows, a Go-based variant named &quot;Pool Rat&quot; on macOS) is retrieved and executed</td><td>Assumes right to operate in two stages (opportunistic broad compromise, then targeted cryptocurrency-industry follow-on) against a customer base of telephony users that overwhelmingly had no relationship to the final-stage targets</td></tr>
+      <tr><td>10</td><td>The infostealer harvests browser history and stored data from Chrome, Edge, Brave, and Firefox profiles, plus 3CX corporate data from the infected endpoint</td><td>Zero disclosure, zero consent at any layer of the cascade, across at least three victim classes: Trading Technologies, 3CX, and 3CX&#x27;s downstream customer base</td></tr>
+      <tr><td>11</td><td>In a small subset of targeted customer environments (primarily cryptocurrency-industry organizations), a final-stage backdoor is deployed with interactive attacker presence</td><td>—</td></tr>
+      <tr><td>12</td><td>The compromise is discovered by CrowdStrike Falcon and SentinelOne independently on 2023-03-29; Mandiant is retained by 3CX for the post-incident investigation and publishes the cascade analysis 2023-04-20</td><td>—</td></tr>
+      <tr><td>13</td><td>3CX revokes the compromised certificates, publishes emergency guidance, and rebuilds its software distribution pipeline</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h2>[SKELETON] — What It Actually Does</h2>
+  <ul>
+    <li>A Lazarus Group subcluster (variously tracked as UNC4736, LABYRINTH CHOLLIMA) compromises Trading Technologies&#x27; X_TRADER application, a deprecated futures-trading client, and distributes a trojanized installer labeled `X_TRADER_r7.17.90p608.exe` bearing a valid but expired Trading Technologies code-signing certificate</li>
+    <li>A 3CX employee downloads and installs the trojanized X_TRADER application on their personal workstation, unaware the software has been backdoored</li>
+    <li>The backdoor on the employee&#x27;s workstation establishes persistence and eventually harvests corporate credentials or tokens that the employee uses to access 3CX&#x27;s build infrastructure</li>
+    <li>The attacker moves laterally from the employee&#x27;s compromise into 3CX&#x27;s build environment</li>
+    <li>The attacker modifies the build output for the 3CX DesktopApp (versions 18.12.407 and 18.12.416 for Windows, 18.11.1213 and later for macOS) to include malicious DLLs (`ffmpeg.dll`, `d3dcompiler_47.dll`) that are loaded by the otherwise-legitimate `3CXDesktopApp.exe`</li>
+    <li>The modified DesktopApp is built, code-signed with 3CX&#x27;s own valid Extended Validation certificate, and published through 3CX&#x27;s standard customer update channel to an installed base of ~12 million desktop users across ~600,000 customer organizations</li>
+    <li>On execution, the malicious `ffmpeg.dll` decrypts shellcode embedded in `d3dcompiler_47.dll`, which sleeps for seven days before activating (dormancy to defeat sandbox analysis)</li>
+    <li>The payload downloads an icon file from a GitHub repository (attacker-controlled account in the `iconstorages` organization); the icon file contains AES-encrypted C2 configuration appended after a valid PNG header (steganography)</li>
+    <li>C2 contact is established and a second-stage infostealer (&quot;ICONIC Stealer&quot; on Windows, a Go-based variant named &quot;Pool Rat&quot; on macOS) is retrieved and executed</li>
+    <li>The infostealer harvests browser history and stored data from Chrome, Edge, Brave, and Firefox profiles, plus 3CX corporate data from the infected endpoint</li>
+    <li>In a small subset of targeted customer environments (primarily cryptocurrency-industry organizations), a final-stage backdoor is deployed with interactive attacker presence</li>
+    <li>The compromise is discovered by CrowdStrike Falcon and SentinelOne independently on 2023-03-29; Mandiant is retained by 3CX for the post-incident investigation and publishes the cascade analysis 2023-04-20</li>
+    <li>3CX revokes the compromised certificates, publishes emergency guidance, and rebuilds its software distribution pipeline</li>
+  </ul>
+
+  <h2>[VIOLATIONS] — Authorization Gaps</h2>
+  <ul>
+    <li>Assumes right to compromise Trading Technologies&#x27; legacy software distribution (an application that had reached end-of-life and should not have been in common use) and use it as a long-tail delivery vehicle against specific downstream targets</li>
+    <li>Assumes right to ride a prior compromise (Trading Technologies / X_TRADER) into an unrelated downstream target (3CX) by exploiting the fact that a 3CX employee was also a Trading Technologies user — a dependency that existed only in the human operator, not in any machine-readable relationship</li>
+    <li>Assumes right to move from a personal-workstation compromise into the employee&#x27;s corporate identity and from there into 3CX&#x27;s build pipeline, exploiting blended personal/work device use</li>
+    <li>Assumes right to modify the build artifacts of a second software vendor and have them signed with that vendor&#x27;s own valid EV certificate, laundering attacker code through an intact and reputationally untainted trust chain</li>
+    <li>Assumes right to distribute the trojanized DesktopApp to ~12 million users across ~600,000 organizations through 3CX&#x27;s normal update infrastructure, then later select which specific organizations receive the follow-on stage</li>
+    <li>Assumes right to host attacker C2 configuration on GitHub, conscripting a third-party platform into the delivery chain</li>
+    <li>Assumes right to use valid-at-sign-time code-signing certificates from two separate vendors (Trading Technologies, 3CX) as trust laundering layers in a single compound operation</li>
+    <li>Assumes right to harvest browser state, credentials, and corporate data from any organization that installed 3CX as their business telephony and conferencing platform</li>
+    <li>Assumes right to operate in two stages (opportunistic broad compromise, then targeted cryptocurrency-industry follow-on) against a customer base of telephony users that overwhelmingly had no relationship to the final-stage targets</li>
+    <li>Zero disclosure, zero consent at any layer of the cascade, across at least three victim classes: Trading Technologies, 3CX, and 3CX&#x27;s downstream customer base</li>
+  </ul>
+
+  <h2>[CONTEXT] — Why the Violations Matter</h2>
+  <ul>
+    <li>Introduces a violation class not yet in the corpus: *supply-chain cascade* — the attack chains two independent supply-chain compromises together, using the output of the first to execute the second. This is structurally different from SUNBURST (single vendor compromise) and from xz-utils (single project compromise). The framework must track that the *victim vendor* can simultaneously be a *downstream victim* of an earlier unrelated operation</li>
+    <li>Introduces a second new violation class: *personal-device / corporate-identity bridging* — the pivot from X_TRADER&#x27;s compromise to 3CX&#x27;s build pipeline happened because one employee used the same machine for personal futures-trading software and for work. Modern BYOD practices, remote work, and developer workstation flexibility are implicit in this violation&#x27;s feasibility; the framework must recognize that the authorization boundary the attacker crossed was the employee&#x27;s personal/work divide, not any network perimeter</li>
+    <li>Customer blast radius was broad and specific simultaneously: ~12 million endpoints received the trojanized DesktopApp, but attacker activity on most of them was limited to the infostealer stage. The final-stage backdoor was deployed narrowly, to cryptocurrency-industry targets. The framework must track that supply-chain compromises enable a *deployment-time selectivity* post-hoc — the broad distribution is a targeting option, not a targeting conclusion</li>
+    <li>Attribution: CISA/FBI and private threat intelligence assessed Lazarus Group / DPRK state-sponsored; operational objective was cryptocurrency theft rather than intelligence collection, consistent with DPRK&#x27;s documented use of cyber operations as state revenue</li>
+    <li>Reuses and extends SUNBURST&#x27;s *build-pipeline-trust subversion* class: both attacks compromise a vendor&#x27;s build process to distribute signed malicious updates, but 3CX goes further by building on a prior supply-chain success. The cascade means one successful build-pipeline compromise can be amortized across multiple downstream operations</li>
+    <li>Reuses the xz-utils violation class pattern *payload outside the audit surface*: the malicious DLLs were dropped into the build output, not committed to the 3CX source repository. 3CX&#x27;s internal source review and CI testing did not surface the compromise because the compromise happened post-build</li>
+    <li>Reuses the NotPetya violation class pattern *mandatory-software supply-chain abuse*, softened: 3CX DesktopApp was chosen by customer organizations voluntarily, but once chosen, every employee in those organizations ran it automatically as part of their telephony workload. The trust relationship was not individually negotiated at endpoint install time</li>
+    <li>Establishes that open-source code-hosting platforms (GitHub, in this case as the icon-file host) are now routine staging infrastructure for state-sponsored supply-chain attacks; the violation extends to platforms that did not offer themselves as part of the trust model</li>
+    <li>Demonstrates that post-compromise dormancy (7 days in this case) is now a standard element of professional supply-chain operations, making install-time analysis and sandbox detonation systematically insufficient as defensive controls</li>
+    <li>Public response was unusually coordinated: 3CX acknowledged the compromise within 24 hours of disclosure, retained Mandiant, published the cascade chain publicly rather than minimizing, and rebuilt their pipeline with documented controls. This response pattern is notable against the baseline of vendor denial / blame-shifting that characterized earlier supply-chain incidents, and sets a floor for what acceptable disclosure looks like after a compromised vendor becomes aware</li>
+    <li>Combined with SUNBURST, xz-utils, Kaseya VSA (2021), CCleaner (2017), and the Dragonfly campaigns against energy-sector ICS vendors, 3CX is another data point that the supply chain is now a first-class theater for state-aligned cyber operations, and that the defender&#x27;s practical response surface has shifted from &quot;patch your systems&quot; to &quot;audit your vendors&#x27; vendors&#x27; vendors&quot;</li>
+  </ul>
+
+  <h2>Impact Statement</h2>
+  <p>This artifact exhibits **10** distinct authorization violations at **critical** severity. The gap between what the code technically does (the skeleton) and what the system owner actually consented to is the entire attack surface. Operations that look benign in isolation become hostile when executed without the owner&#x27;s knowledge, intent, or ability to refuse.</p>
+</body>
+</html>

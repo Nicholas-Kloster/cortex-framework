@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ILOVEYOU Worm (2000) — Authorization Context Analysis — Cortex Report</title>
+<style>
+:root { color-scheme: dark; }
+body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width: 960px;
+       margin: 2rem auto; padding: 0 1rem; background:#0d1117; color:#e6edf3; }
+h1, h2 { border-bottom:1px solid #30363d; padding-bottom:.3rem; }
+code, pre { background:#161b22; padding:.1rem .3rem; border-radius:4px; }
+table { border-collapse: collapse; width:100%; margin: 1rem 0; }
+th, td { border:1px solid #30363d; padding:.5rem .6rem; vertical-align: top; text-align:left; }
+th { background:#161b22; }
+blockquote { color:#8b949e; border-left:3px solid #30363d; margin:.5rem 0; padding:.2rem .8rem; }
+.sev-critical { color:#ff6b6b; font-weight:700; }
+.sev-high     { color:#ff6b6b; font-weight:700; }
+.sev-medium   { color:#ffb86c; font-weight:600; }
+.sev-low      { color:#f1fa8c; }
+.sev-informational { color:#6272a4; }
+.meta { color:#8b949e; font-size:.9rem; }
+ul li { margin:.2rem 0; }
+</style>
+</head>
+<body>
+  <h1>Cortex Analysis Report</h1>
+  <p class="meta"><strong>Subject:</strong> ILOVEYOU Worm (2000) — Authorization Context Analysis<br>
+  <strong>Analyzed:</strong> 2026-04-18T17:14:59.045563Z<br>
+  <strong>Source:</strong> <code>examples/iloveyou.md</code></p>
+
+  <h2>Summary</h2>
+  <ul>
+    <li>Severity: <span class="sev-critical">🔴 Critical</span></li>
+    <li>Operations (skeleton): 10</li>
+    <li>Authorization violations: 9</li>
+    <li>Context notes: 9</li>
+    <li>Skeleton → Violation gap: -1</li>
+  </ul>
+
+  <h2>Skeleton vs. Violations</h2>
+  <blockquote>The gap between what code <em>does</em> and what it <em>assumes the right to do</em> is the attack surface.</blockquote>
+  <table>
+    <thead><tr><th>#</th><th>Skeleton</th><th>Violation</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Arrives as email attachment named `LOVE-LETTER-FOR-YOU.TXT.vbs`</td><td>Assumes right to read the user&#x27;s entire contact list without asking</td></tr>
+      <tr><td>2</td><td>Executes as VBScript when opened by user</td><td>Assumes right to send email as the user to all contacts without notification or consent</td></tr>
+      <tr><td>3</td><td>Reads Windows Address Book to enumerate contacts</td><td>Assumes right to traverse and read any file on any mounted drive</td></tr>
+      <tr><td>4</td><td>Sends copy of itself to all discovered contacts via Outlook</td><td>Assumes right to permanently overwrite and destroy user files (photos, music, scripts)</td></tr>
+      <tr><td>5</td><td>Traverses local drives searching for files by extension</td><td>Assumes right to persist across reboots via registry modification without disclosure</td></tr>
+      <tr><td>6</td><td>Overwrites files matching target extensions (.jpg, .jpeg, .mp3, .mp2, .css, .js, .vbs, .vbe, .jse, .wsh, .sct, .hta, .bat, .com, .ht) with copy of itself</td><td>Assumes right to download and execute arbitrary remote code</td></tr>
+      <tr><td>7</td><td>Renames overwritten files with `.vbs` extension appended</td><td>Assumes right to modify browser configuration</td></tr>
+      <tr><td>8</td><td>Modifies registry to set itself as startup executable</td><td>Zero authorization checks at any step — no prompts, confirmations, or scope limits</td></tr>
+      <tr><td>9</td><td>Downloads additional payload from remote URL (via IRC channel)</td><td>Impersonates a legitimate personal message to obtain initial execution</td></tr>
+      <tr><td>10</td><td>Sets Internet Explorer start page to payload download URL</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h2>[SKELETON] — What It Actually Does</h2>
+  <ul>
+    <li>Arrives as email attachment named `LOVE-LETTER-FOR-YOU.TXT.vbs`</li>
+    <li>Executes as VBScript when opened by user</li>
+    <li>Reads Windows Address Book to enumerate contacts</li>
+    <li>Sends copy of itself to all discovered contacts via Outlook</li>
+    <li>Traverses local drives searching for files by extension</li>
+    <li>Overwrites files matching target extensions (.jpg, .jpeg, .mp3, .mp2, .css, .js, .vbs, .vbe, .jse, .wsh, .sct, .hta, .bat, .com, .ht) with copy of itself</li>
+    <li>Renames overwritten files with `.vbs` extension appended</li>
+    <li>Modifies registry to set itself as startup executable</li>
+    <li>Downloads additional payload from remote URL (via IRC channel)</li>
+    <li>Sets Internet Explorer start page to payload download URL</li>
+  </ul>
+
+  <h2>[VIOLATIONS] — Authorization Gaps</h2>
+  <ul>
+    <li>Assumes right to read the user&#x27;s entire contact list without asking</li>
+    <li>Assumes right to send email as the user to all contacts without notification or consent</li>
+    <li>Assumes right to traverse and read any file on any mounted drive</li>
+    <li>Assumes right to permanently overwrite and destroy user files (photos, music, scripts)</li>
+    <li>Assumes right to persist across reboots via registry modification without disclosure</li>
+    <li>Assumes right to download and execute arbitrary remote code</li>
+    <li>Assumes right to modify browser configuration</li>
+    <li>Zero authorization checks at any step — no prompts, confirmations, or scope limits</li>
+    <li>Impersonates a legitimate personal message to obtain initial execution</li>
+  </ul>
+
+  <h2>[CONTEXT] — Why the Violations Matter</h2>
+  <ul>
+    <li>Operates entirely against the owner&#x27;s intent — no legitimate user wants files overwritten</li>
+    <li>Destruction is permanent: overwritten files cannot be recovered without backup</li>
+    <li>Propagation uses the victim&#x27;s social trust to infect contacts — recipients believe it is from a known person</li>
+    <li>Estimated 50 million infections in 10 days; estimated $10 billion in damages</li>
+    <li>Contact list exfiltration exposes PII of third parties who never consented</li>
+    <li>Remote code download creates an unbounded attack surface — any payload could be retrieved</li>
+    <li>Registry persistence means damage continues across reboots without user awareness</li>
+    <li>File overwriting disguised as extension rename — deceptive even in its destructive mechanism</li>
+    <li>Executed in user context but operates with no user-defined authorization scope</li>
+  </ul>
+
+  <h2>Impact Statement</h2>
+  <p>This artifact exhibits **9** distinct authorization violations at **critical** severity. The gap between what the code technically does (the skeleton) and what the system owner actually consented to is the entire attack surface. Operations that look benign in isolation become hostile when executed without the owner&#x27;s knowledge, intent, or ability to refuse.</p>
+</body>
+</html>

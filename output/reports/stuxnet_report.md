@@ -1,0 +1,101 @@
+# Cortex Analysis Report
+**Subject:** Stuxnet (2010) — Authorization Context Analysis  
+**Analyzed:** 2026-04-18T17:14:59.303330Z  
+**Source:** `examples/stuxnet.md`
+
+---
+## Summary
+
+| Section    | Items |
+|------------|-------|
+| SKELETON   | 15 |
+| VIOLATIONS | 13 |
+| CONTEXT    | 11 |
+
+**Authorization Violation Severity:** 🔴 Critical  
+**Skeleton → Violation gap:** -2 (positive = more assumed rights than observed operations)
+
+---
+## Skeleton vs. Violations
+
+> The gap between what code *does* and what it *assumes the right to do* is the attack surface.
+
+| # | What the code does (Skeleton) | What it assumes the right to do (Violation) |
+|---|-------------------------------|---------------------------------------------|
+| 1 | Propagates via removable USB media using LNK file parsing vulnerability (CVE-2010-2568) | Assumes right to execute arbitrary code by merely having its icon rendered (zero-click LNK vulnerability) |
+| 2 | Propagates across LAN via Windows Print Spooler vulnerability (CVE-2010-2729) | Assumes right to chain multiple zero-day vulnerabilities, depleting defender response budget in a single operation |
+| 3 | Propagates via Server Service RPC vulnerability (MS08-067), reused from earlier worms | Assumes right to masquerade as trusted hardware vendors by using stolen code-signing certificates |
+| 4 | Propagates to WinCC SCADA hosts using hardcoded Siemens SQL Server credentials | Assumes right to load ring-0 kernel drivers bearing forged trust credentials |
+| 5 | Loads Windows kernel drivers signed with stolen code-signing certificates from Realtek and JMicron | Assumes right to silently enumerate industrial control system software on any host it touches |
+| 6 | Installs rootkit components (MRXCLS.SYS, MRXNET.SYS) to hide its files and processes | Assumes right to cross air-gapped network boundaries via USB infection chains without operator awareness |
+| 7 | Enumerates presence of Siemens SIMATIC Step7 and WinCC industrial control software | Assumes right to modify programmable logic controller code, altering the physical behavior of industrial equipment |
+| 8 | Injects a DLL into the Step7 engineering workstation process to intercept PLC block reads and writes | Assumes right to inflict physical damage on centrifuges by driving rotors outside design tolerances |
+| 9 | Fingerprints the target PLC model (Siemens S7-315 and S7-417) and attached hardware | Assumes right to present falsified sensor data to human operators, denying them real-time ground truth |
+| 10 | Checks for Profibus-connected frequency converters from specific vendors (Fararo Paya, Vacon) at specific operating frequencies | Assumes right to impersonate nation-state-scale trust relationships (certificates from Taiwanese hardware firms indicate certificate theft at the issuer level) |
+| 11 | Modifies PLC ladder logic on matching systems to alter centrifuge rotor speed over extended cycles | Assumes right to self-propagate within networks it was never authorized to enter |
+| 12 | Records legitimate PLC sensor values during normal operation and replays them to the operator HMI during attack windows | Assumes right to execute kinetic effects on physical infrastructure with no consent-capable party in the loop |
+| 13 | Limits replication per USB device (maximum 3 onward infections) | Zero authorization checks at any step — no disclosure, no scope boundary, no consent mechanism at any layer |
+| 14 | Contains a hardcoded kill date (June 24, 2012) after which propagation stops | — |
+| 15 | Supports modular payload updates via peer-to-peer RPC between infected hosts | — |
+
+---
+## [SKELETON] — What It Actually Does
+
+> Functional operations, divorced from intent, vocabulary, or context.
+
+- Propagates via removable USB media using LNK file parsing vulnerability (CVE-2010-2568)
+- Propagates across LAN via Windows Print Spooler vulnerability (CVE-2010-2729)
+- Propagates via Server Service RPC vulnerability (MS08-067), reused from earlier worms
+- Propagates to WinCC SCADA hosts using hardcoded Siemens SQL Server credentials
+- Loads Windows kernel drivers signed with stolen code-signing certificates from Realtek and JMicron
+- Installs rootkit components (MRXCLS.SYS, MRXNET.SYS) to hide its files and processes
+- Enumerates presence of Siemens SIMATIC Step7 and WinCC industrial control software
+- Injects a DLL into the Step7 engineering workstation process to intercept PLC block reads and writes
+- Fingerprints the target PLC model (Siemens S7-315 and S7-417) and attached hardware
+- Checks for Profibus-connected frequency converters from specific vendors (Fararo Paya, Vacon) at specific operating frequencies
+- Modifies PLC ladder logic on matching systems to alter centrifuge rotor speed over extended cycles
+- Records legitimate PLC sensor values during normal operation and replays them to the operator HMI during attack windows
+- Limits replication per USB device (maximum 3 onward infections)
+- Contains a hardcoded kill date (June 24, 2012) after which propagation stops
+- Supports modular payload updates via peer-to-peer RPC between infected hosts
+
+---
+## [VIOLATIONS] — Authorization Gaps
+
+> What does this assume the right to do without explicit consent or validation?
+
+- Assumes right to execute arbitrary code by merely having its icon rendered (zero-click LNK vulnerability)
+- Assumes right to chain multiple zero-day vulnerabilities, depleting defender response budget in a single operation
+- Assumes right to masquerade as trusted hardware vendors by using stolen code-signing certificates
+- Assumes right to load ring-0 kernel drivers bearing forged trust credentials
+- Assumes right to silently enumerate industrial control system software on any host it touches
+- Assumes right to cross air-gapped network boundaries via USB infection chains without operator awareness
+- Assumes right to modify programmable logic controller code, altering the physical behavior of industrial equipment
+- Assumes right to inflict physical damage on centrifuges by driving rotors outside design tolerances
+- Assumes right to present falsified sensor data to human operators, denying them real-time ground truth
+- Assumes right to impersonate nation-state-scale trust relationships (certificates from Taiwanese hardware firms indicate certificate theft at the issuer level)
+- Assumes right to self-propagate within networks it was never authorized to enter
+- Assumes right to execute kinetic effects on physical infrastructure with no consent-capable party in the loop
+- Zero authorization checks at any step — no disclosure, no scope boundary, no consent mechanism at any layer
+
+---
+## [CONTEXT] — Why the Violations Matter
+
+> Impact, deception, unauthorized access, intent.
+
+- First known malware engineered to produce physical kinetic damage in the real world, not just data loss
+- Targeted Iran's uranium enrichment facility at Natanz; estimated ~1,000 IR-1 centrifuges destroyed (~20% of then-current enrichment capacity, 2009–2010)
+- Established the precedent that nation-state cyber operations can achieve outcomes previously reserved for kinetic military strikes
+- Code-signing PKI was permanently weakened — exploitation of Realtek and JMicron certificates proved the chain of trust is only as strong as its weakest issuer
+- SCADA replay attack meant plant operators watched normal-looking displays while centrifuges spun themselves apart — the owner's ability to observe their own system was itself the target
+- Air-gap crossing via USB demonstrated that physical isolation is not sufficient defense against determined adversaries with supply-chain reach
+- Worm behavior caused infections to spread beyond the intended target (India, Indonesia, broader Europe), which is how the operation was discovered at all (VirusBlokAda, June 2010) — intended scope was narrow; actual scope was global
+- No state has publicly claimed responsibility; no international legal framework addresses kinetic-outcome cyber operations against industrial infrastructure
+- Reveals a violation class the framework must hold: *nation-state trust-relationship exploitation* operating against physical systems that have no consent-giving mechanism because they were never designed to negotiate authorization
+- Defined a template: subsequent attacks (Industroyer, Triton, Havex, Pipedream) have all replayed elements of the Stuxnet model against grid, refinery, and safety-system targets
+- Owner-exclusion is total: the victim state could not detect the attack for 18+ months, could not attribute it with confidence, and could not respond without escalating to kinetic retaliation it was not positioned to execute
+
+---
+## Impact Statement
+
+This artifact exhibits **13** distinct authorization violations at **critical** severity. The gap between what the code technically does (the skeleton) and what the system owner actually consented to is the entire attack surface. Operations that look benign in isolation become hostile when executed without the owner's knowledge, intent, or ability to refuse.

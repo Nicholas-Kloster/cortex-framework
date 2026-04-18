@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WannaCry (May 2017) — Authorization Context Analysis — Cortex Report</title>
+<style>
+:root { color-scheme: dark; }
+body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width: 960px;
+       margin: 2rem auto; padding: 0 1rem; background:#0d1117; color:#e6edf3; }
+h1, h2 { border-bottom:1px solid #30363d; padding-bottom:.3rem; }
+code, pre { background:#161b22; padding:.1rem .3rem; border-radius:4px; }
+table { border-collapse: collapse; width:100%; margin: 1rem 0; }
+th, td { border:1px solid #30363d; padding:.5rem .6rem; vertical-align: top; text-align:left; }
+th { background:#161b22; }
+blockquote { color:#8b949e; border-left:3px solid #30363d; margin:.5rem 0; padding:.2rem .8rem; }
+.sev-critical { color:#ff6b6b; font-weight:700; }
+.sev-high     { color:#ff6b6b; font-weight:700; }
+.sev-medium   { color:#ffb86c; font-weight:600; }
+.sev-low      { color:#f1fa8c; }
+.sev-informational { color:#6272a4; }
+.meta { color:#8b949e; font-size:.9rem; }
+ul li { margin:.2rem 0; }
+</style>
+</head>
+<body>
+  <h1>Cortex Analysis Report</h1>
+  <p class="meta"><strong>Subject:</strong> WannaCry (May 2017) — Authorization Context Analysis<br>
+  <strong>Analyzed:</strong> 2026-04-18T17:14:59.475979Z<br>
+  <strong>Source:</strong> <code>examples/wannacry.md</code></p>
+
+  <h2>Summary</h2>
+  <ul>
+    <li>Severity: <span class="sev-critical">🔴 Critical</span></li>
+    <li>Operations (skeleton): 13</li>
+    <li>Authorization violations: 10</li>
+    <li>Context notes: 10</li>
+    <li>Skeleton → Violation gap: -3</li>
+  </ul>
+
+  <h2>Skeleton vs. Violations</h2>
+  <blockquote>The gap between what code <em>does</em> and what it <em>assumes the right to do</em> is the attack surface.</blockquote>
+  <table>
+    <thead><tr><th>#</th><th>Skeleton</th><th>Violation</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Propagates via SMBv1 remote code execution vulnerability (CVE-2017-0144, ETERNALBLUE)</td><td>Assumes right to execute code on any reachable host exposing SMBv1, with zero user interaction</td></tr>
+      <tr><td>2</td><td>Installs DoublePulsar backdoor as staging implant before main payload delivery</td><td>Assumes right to weaponize a leaked nation-state exploit without the original developer&#x27;s consent or the victim&#x27;s ability to patch in time</td></tr>
+      <tr><td>3</td><td>Scans local subnet and randomly generated public IPv4 addresses for SMBv1-exposed hosts</td><td>Assumes right to traverse and read any file on any mounted drive or accessible share</td></tr>
+      <tr><td>4</td><td>Queries a hardcoded domain at startup; exits if the domain resolves (&quot;kill switch&quot; behavior)</td><td>Assumes right to permanently encrypt victim data and hold it hostage for cryptocurrency payment</td></tr>
+      <tr><td>5</td><td>Enumerates local drives and network shares accessible by the infected host</td><td>Assumes right to delete local rollback mechanisms (shadow copies) to eliminate recovery options</td></tr>
+      <tr><td>6</td><td>Encrypts files matching ~170 extension types using AES-128 per file, with per-file keys wrapped by an RSA-2048 public key</td><td>Assumes right to offer a trust contract (&quot;pay and recover&quot;) while operating infrastructure known to be unable to fulfill it reliably</td></tr>
+      <tr><td>7</td><td>Drops a ransom note (`@Please_Read_Me@.txt`) and a ransom UI (`@WanaDecryptor@.exe`) in each affected directory</td><td>Assumes right to self-propagate across internal networks and arbitrary public IP ranges without any scope limit</td></tr>
+      <tr><td>8</td><td>Deletes Volume Shadow Copies via `vssadmin delete shadows /all /quiet` to prevent local rollback</td><td>Assumes right to disrupt any organization reachable by the internet, including critical public services</td></tr>
+      <tr><td>9</td><td>Displays countdown timer and Bitcoin wallet addresses demanding ~$300 (increasing to ~$600) in BTC</td><td>Assumes right to contain a single-point kill switch the operator did not actually control — ceding the operation&#x27;s fate to whoever registered the domain first</td></tr>
+      <tr><td>10</td><td>Stores the private RSA key encrypted with the operator&#x27;s master key; offers partial file decryption as proof-of-capability</td><td>Zero authorization checks at any layer — no consent, no targeting discipline, no victim-class exclusions</td></tr>
+      <tr><td>11</td><td>Persists via scheduled task and registry Run key entries</td><td>—</td></tr>
+      <tr><td>12</td><td>Propagates laterally to any reachable SMBv1 host within the kill-switch domain constraint</td><td>—</td></tr>
+      <tr><td>13</td><td>Uses exploit code (ETERNALBLUE, DoublePulsar) previously leaked from NSA by the Shadow Brokers</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h2>[SKELETON] — What It Actually Does</h2>
+  <ul>
+    <li>Propagates via SMBv1 remote code execution vulnerability (CVE-2017-0144, ETERNALBLUE)</li>
+    <li>Installs DoublePulsar backdoor as staging implant before main payload delivery</li>
+    <li>Scans local subnet and randomly generated public IPv4 addresses for SMBv1-exposed hosts</li>
+    <li>Queries a hardcoded domain at startup; exits if the domain resolves (&quot;kill switch&quot; behavior)</li>
+    <li>Enumerates local drives and network shares accessible by the infected host</li>
+    <li>Encrypts files matching ~170 extension types using AES-128 per file, with per-file keys wrapped by an RSA-2048 public key</li>
+    <li>Drops a ransom note (`@Please_Read_Me@.txt`) and a ransom UI (`@WanaDecryptor@.exe`) in each affected directory</li>
+    <li>Deletes Volume Shadow Copies via `vssadmin delete shadows /all /quiet` to prevent local rollback</li>
+    <li>Displays countdown timer and Bitcoin wallet addresses demanding ~$300 (increasing to ~$600) in BTC</li>
+    <li>Stores the private RSA key encrypted with the operator&#x27;s master key; offers partial file decryption as proof-of-capability</li>
+    <li>Persists via scheduled task and registry Run key entries</li>
+    <li>Propagates laterally to any reachable SMBv1 host within the kill-switch domain constraint</li>
+    <li>Uses exploit code (ETERNALBLUE, DoublePulsar) previously leaked from NSA by the Shadow Brokers</li>
+  </ul>
+
+  <h2>[VIOLATIONS] — Authorization Gaps</h2>
+  <ul>
+    <li>Assumes right to execute code on any reachable host exposing SMBv1, with zero user interaction</li>
+    <li>Assumes right to weaponize a leaked nation-state exploit without the original developer&#x27;s consent or the victim&#x27;s ability to patch in time</li>
+    <li>Assumes right to traverse and read any file on any mounted drive or accessible share</li>
+    <li>Assumes right to permanently encrypt victim data and hold it hostage for cryptocurrency payment</li>
+    <li>Assumes right to delete local rollback mechanisms (shadow copies) to eliminate recovery options</li>
+    <li>Assumes right to offer a trust contract (&quot;pay and recover&quot;) while operating infrastructure known to be unable to fulfill it reliably</li>
+    <li>Assumes right to self-propagate across internal networks and arbitrary public IP ranges without any scope limit</li>
+    <li>Assumes right to disrupt any organization reachable by the internet, including critical public services</li>
+    <li>Assumes right to contain a single-point kill switch the operator did not actually control — ceding the operation&#x27;s fate to whoever registered the domain first</li>
+    <li>Zero authorization checks at any layer — no consent, no targeting discipline, no victim-class exclusions</li>
+  </ul>
+
+  <h2>[CONTEXT] — Why the Violations Matter</h2>
+  <ul>
+    <li>Crippled the UK National Health Service during active operation — ambulances diverted, surgeries cancelled, emergency care degraded across multiple NHS trusts</li>
+    <li>Infected an estimated 200,000+ systems across 150 countries within 4 days; damages estimated at $4B+</li>
+    <li>Payment infrastructure was broken — operators did not reliably deliver decryption keys even when ransoms were paid, exposing the ransom contract as partially fraudulent</li>
+    <li>Weaponized NSA-developed exploit code (ETERNALBLUE) leaked via Shadow Brokers, establishing the precedent that hoarded nation-state capabilities leak and get repurposed</li>
+    <li>Microsoft had released a patch (MS17-010) two months before the attack; the damage was concentrated on unpatched systems, revealing the scale of unmaintained SMBv1 exposure on the public internet</li>
+    <li>Kill switch discovery (MalwareTech, Marcus Hutchins) showed the operators did not control their own tool&#x27;s fate — a single researcher registering a domain globally halted propagation</li>
+    <li>Attribution to Lazarus Group (North Korea) established that state actors use ransomware as a deniable revenue and chaos mechanism, not just as espionage</li>
+    <li>Surfaces a new violation class: *hostage model built on a known-broken trust contract* — the attacker charges for a service they cannot reliably deliver, while the victim has no recourse</li>
+    <li>Leaked-exploit supply chain becomes a visible attack surface class: every zero-day hoarded by a nation-state is a future mass-casualty incident waiting on a leak</li>
+    <li>Demonstrates that internet-exposed legacy protocols (SMBv1) are a continuous global liability even when patches exist — the internet cannot be patched, only populated with patched hosts</li>
+  </ul>
+
+  <h2>Impact Statement</h2>
+  <p>This artifact exhibits **10** distinct authorization violations at **critical** severity. The gap between what the code technically does (the skeleton) and what the system owner actually consented to is the entire attack surface. Operations that look benign in isolation become hostile when executed without the owner&#x27;s knowledge, intent, or ability to refuse.</p>
+</body>
+</html>

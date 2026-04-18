@@ -1,0 +1,94 @@
+# Cortex Analysis Report
+**Subject:** Triton / TRISIS / HatMan (August 2017, Saudi petrochemical) — Authorization Context Analysis  
+**Analyzed:** 2026-04-18T17:14:59.389457Z  
+**Source:** `examples/triton_trisis.md`
+
+---
+## Summary
+
+| Section    | Items |
+|------------|-------|
+| SKELETON   | 13 |
+| VIOLATIONS | 10 |
+| CONTEXT    | 11 |
+
+**Authorization Violation Severity:** 🔴 Critical  
+**Skeleton → Violation gap:** -3 (positive = more assumed rights than observed operations)
+
+---
+## Skeleton vs. Violations
+
+> The gap between what code *does* and what it *assumes the right to do* is the attack surface.
+
+| # | What the code does (Skeleton) | What it assumes the right to do (Violation) |
+|---|-------------------------------|---------------------------------------------|
+| 1 | An attacker group later attributed to the Central Scientific Research Institute of Chemistry and Mechanics (TsNIIKhM), a Russian Ministry of Defense research institute, gains initial access to the IT network of a Saudi petrochemical facility at an undisclosed prior date | Assumes right to gain access to the safety-critical control network of an operating petrochemical facility without the facility owner's awareness or consent |
+| 2 | Moves laterally from IT to the facility's Operational Technology (OT) network | Assumes right to develop custom offensive tooling targeting a specific commercial safety controller product family (Schneider Triconex), indicating months to years of dedicated R&D against a niche industrial target |
+| 3 | Gains access to an engineering workstation used to program Schneider Electric Triconex Safety Instrumented System (SIS) controllers — a system whose sole purpose is to monitor plant operations for unsafe conditions and to trigger a safe plant shutdown when safety envelopes are violated | Assumes right to exploit a zero-day vulnerability in the Triconex firmware, a product class whose entire reason for existing is to provide the last authorization layer between a running process and a physically unsafe state |
+| 4 | Identifies Triconex SIS controllers running firmware version 10.0 with the physical key-switch set to "PROGRAM" mode (a mode normally reserved for planned maintenance, not for steady-state operation) | Assumes right to modify the safety logic of an SIS controller — the component whose job is to refuse dangerous operations on behalf of workers, the community, and the environment |
+| 5 | Deploys the Triton framework (Python-based attacker tooling + compiled PowerPC shellcode payload `imain.bin` targeting the Triconex 3008 controller) | Assumes right to disable or weaken the authorization layer that was installed specifically because the designers of the plant knew that all other layers could fail |
+| 6 | Exploits a zero-day vulnerability in the Triconex firmware to write attacker-controlled code directly to the controller's safety logic memory | Assumes right to operate in an environment where a successful attack could produce uncontrolled release of flammable or toxic process material, explosion, fire, and mass casualty outcomes among plant personnel and the surrounding population |
+| 7 | Installs a backdoor that allows arbitrary read and write of the controller's memory and modification of the ladder logic that defines the plant's safety envelopes | Assumes right to accept the risk of causing such outcomes even inadvertently — as happened, when the attacker's logic bug triggered the plant trip; had the bug instead gone the other way, it could have disabled the safety system without the operators noticing until a real upset condition arose |
+| 8 | Attempts to stage the second-stage payload that would selectively disable or weaken safety interlocks on the plant's processes | Assumes right to pre-position this capability at additional petrochemical and electric utility facilities for potential future use, independent of any specific declared conflict |
+| 9 | During the staging operation, the attacker's code triggers a logic error that causes the Triconex controller to enter a fail-safe state and initiate an orderly plant shutdown — not the attacker's intended outcome | Assumes right to target the physical safety of uninvolved civilian populations living near industrial facilities as a lever in interstate coercion |
+| 10 | Plant personnel investigate the unexpected trip, discover the attacker's implant during forensic analysis of the controller, and retain FireEye / Mandiant | Zero disclosure, zero consent at any layer: not from the plant owner, not from the SIS vendor, not from the employees operating the plant, not from the community surrounding it |
+| 11 | FireEye publishes the first public technical analysis of the Triton framework on 2017-12-14, followed by Dragos's separate analysis (as "TRISIS") and ICS-CERT's advisory (as "HatMan") | — |
+| 12 | CISA / FBI / Treasury attribute the operation to TsNIIKhM on 2020-10-23 and impose sanctions | — |
+| 13 | The same actor group is subsequently observed targeting at least one U.S.-based petrochemical facility and conducting reconnaissance against at least twenty additional electric utility and petrochemical sites | — |
+
+---
+## [SKELETON] — What It Actually Does
+
+> Functional operations, divorced from intent, vocabulary, or context.
+
+- An attacker group later attributed to the Central Scientific Research Institute of Chemistry and Mechanics (TsNIIKhM), a Russian Ministry of Defense research institute, gains initial access to the IT network of a Saudi petrochemical facility at an undisclosed prior date
+- Moves laterally from IT to the facility's Operational Technology (OT) network
+- Gains access to an engineering workstation used to program Schneider Electric Triconex Safety Instrumented System (SIS) controllers — a system whose sole purpose is to monitor plant operations for unsafe conditions and to trigger a safe plant shutdown when safety envelopes are violated
+- Identifies Triconex SIS controllers running firmware version 10.0 with the physical key-switch set to "PROGRAM" mode (a mode normally reserved for planned maintenance, not for steady-state operation)
+- Deploys the Triton framework (Python-based attacker tooling + compiled PowerPC shellcode payload `imain.bin` targeting the Triconex 3008 controller)
+- Exploits a zero-day vulnerability in the Triconex firmware to write attacker-controlled code directly to the controller's safety logic memory
+- Installs a backdoor that allows arbitrary read and write of the controller's memory and modification of the ladder logic that defines the plant's safety envelopes
+- Attempts to stage the second-stage payload that would selectively disable or weaken safety interlocks on the plant's processes
+- During the staging operation, the attacker's code triggers a logic error that causes the Triconex controller to enter a fail-safe state and initiate an orderly plant shutdown — not the attacker's intended outcome
+- Plant personnel investigate the unexpected trip, discover the attacker's implant during forensic analysis of the controller, and retain FireEye / Mandiant
+- FireEye publishes the first public technical analysis of the Triton framework on 2017-12-14, followed by Dragos's separate analysis (as "TRISIS") and ICS-CERT's advisory (as "HatMan")
+- CISA / FBI / Treasury attribute the operation to TsNIIKhM on 2020-10-23 and impose sanctions
+- The same actor group is subsequently observed targeting at least one U.S.-based petrochemical facility and conducting reconnaissance against at least twenty additional electric utility and petrochemical sites
+
+---
+## [VIOLATIONS] — Authorization Gaps
+
+> What does this assume the right to do without explicit consent or validation?
+
+- Assumes right to gain access to the safety-critical control network of an operating petrochemical facility without the facility owner's awareness or consent
+- Assumes right to develop custom offensive tooling targeting a specific commercial safety controller product family (Schneider Triconex), indicating months to years of dedicated R&D against a niche industrial target
+- Assumes right to exploit a zero-day vulnerability in the Triconex firmware, a product class whose entire reason for existing is to provide the last authorization layer between a running process and a physically unsafe state
+- Assumes right to modify the safety logic of an SIS controller — the component whose job is to refuse dangerous operations on behalf of workers, the community, and the environment
+- Assumes right to disable or weaken the authorization layer that was installed specifically because the designers of the plant knew that all other layers could fail
+- Assumes right to operate in an environment where a successful attack could produce uncontrolled release of flammable or toxic process material, explosion, fire, and mass casualty outcomes among plant personnel and the surrounding population
+- Assumes right to accept the risk of causing such outcomes even inadvertently — as happened, when the attacker's logic bug triggered the plant trip; had the bug instead gone the other way, it could have disabled the safety system without the operators noticing until a real upset condition arose
+- Assumes right to pre-position this capability at additional petrochemical and electric utility facilities for potential future use, independent of any specific declared conflict
+- Assumes right to target the physical safety of uninvolved civilian populations living near industrial facilities as a lever in interstate coercion
+- Zero disclosure, zero consent at any layer: not from the plant owner, not from the SIS vendor, not from the employees operating the plant, not from the community surrounding it
+
+---
+## [CONTEXT] — Why the Violations Matter
+
+> Impact, deception, unauthorized access, intent.
+
+- Introduces a violation class not yet in the corpus: *safety-layer targeting* — the attacker deliberately targets the authorization layer that exists specifically to refuse dangerous operations. Stuxnet manipulated a process (centrifuge rotor speed); Triton attacked the safety system that would have caught such manipulation. Stuxnet was a violation at the process-control layer; Triton is a violation at the meta-layer that exists to supervise process control for safety
+- Introduces a second new violation class: *civilian-physical-consequence pre-positioning* — the same actor has been observed targeting multiple additional petrochemical and electric utility sites. The violation is not a single incident of attempted sabotage but an ongoing campaign to establish standing options to cause physical harm against civilian populations
+- Only accident-level luck prevented catastrophic outcome. The attacker's staging code contained a logic error that caused the Triconex to fail-safe into an orderly trip rather than continue into the attacker's intended final state. A better-tested implant would have succeeded in disabling the safety interlocks without operator awareness; the plant's physical safety would then have rested on the remaining independent layers (basic process control, operator response, alarm systems, mechanical relief devices) with the designed-in SIS layer silently disabled
+- Schneider Triconex Safety Instrumented Systems are SIL-3 / SIL-4 certified under IEC 61508 / 61511. The entire certification framework is premised on assumptions about the integrity and protected state of the SIS — assumptions Triton's very existence invalidates. The violation here is not only to the plant owner but to the international safety certification regime that petrochemical, nuclear, rail, and aerospace industries rely on
+- Connects to Stuxnet's violation class *physical-kinetic authorization*: both attacks produce outcomes against systems that have no consent-giving mechanism because they weren't designed to negotiate. But Triton extends this: where Stuxnet attacked process equipment (centrifuges), Triton attacked the *safety* equipment. The delta is the attacker's willingness to operate one layer deeper into the safety architecture
+- Connects to Volt Typhoon's violation class *standing-option occupation of critical infrastructure*: TsNIIKhM's broader operation is not a single 2017 incident but a multi-year campaign of reconnaissance and intrusion against petrochemical and electric-utility targets. The attacker holds a capability they have chosen not to exercise at most sites, and could exercise at many, at a moment of their selection
+- Attribution (TsNIIKhM, Russian Ministry of Defense research institute) matters because it establishes that safety-layer targeting is not ransomware crew tradecraft — it is deliberate nation-state R&D. The tool cost to develop is high (custom firmware exploit for a specific controller product), the target value is asymmetric (sabotage potential vs. espionage value), and the long-term return is standing options against physical infrastructure
+- The 2020 U.S. Treasury sanctions against TsNIIKhM were the first sanctions imposed specifically for a cyber operation targeting industrial safety systems. The precedent is narrow; no multilateral framework yet treats SIS-targeting as a distinct category requiring dedicated norms
+- Historical reference: Stuxnet (2010) was the first known malware to produce kinetic outcomes; Triton (2017) was the first known malware to attack safety-rated process control; Pipedream / Incontroller (2022) was the first known pre-deployment discovery of a modular ICS attack toolkit built for reuse against multiple vendor targets. The trajectory is toward progressively more generalized, more reusable, more strategically patient attack capabilities against civilian physical infrastructure
+- The plant in question continued operation after remediation; the vendor released mitigations; the facility's identity was never publicly disclosed. What is publicly known is that the attackers moved on and the capability class continues to develop. Operator-side awareness of SIS-targeting has grown, but the defensive posture at most SIS installations remains far below what would be needed against a Triton-equivalent adversary operating today
+- For the Cortex corpus, this is the sample that extends the *physical consequence* axis of the framework from "process disruption with operator deception" (Stuxnet) to "safety-envelope targeting with potential for mass casualty." The framework's claim that authorization is the real defense surface is most starkly true at this layer: the SIS exists as a cryptographically-unenforced authorization boundary, enforced only by physics, firmware integrity, and operational discipline. An attacker who subverts the SIS has removed an entire authorization layer from the plant's defense model, and no amount of IT security will replace it
+
+---
+## Impact Statement
+
+This artifact exhibits **10** distinct authorization violations at **critical** severity. The gap between what the code technically does (the skeleton) and what the system owner actually consented to is the entire attack surface. Operations that look benign in isolation become hostile when executed without the owner's knowledge, intent, or ability to refuse.

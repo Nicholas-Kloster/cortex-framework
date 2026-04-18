@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Phishing / 419 Advance-Fee Scam (as a class) — Authorization Context Analysis — Cortex Report</title>
+<style>
+:root { color-scheme: dark; }
+body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width: 960px;
+       margin: 2rem auto; padding: 0 1rem; background:#0d1117; color:#e6edf3; }
+h1, h2 { border-bottom:1px solid #30363d; padding-bottom:.3rem; }
+code, pre { background:#161b22; padding:.1rem .3rem; border-radius:4px; }
+table { border-collapse: collapse; width:100%; margin: 1rem 0; }
+th, td { border:1px solid #30363d; padding:.5rem .6rem; vertical-align: top; text-align:left; }
+th { background:#161b22; }
+blockquote { color:#8b949e; border-left:3px solid #30363d; margin:.5rem 0; padding:.2rem .8rem; }
+.sev-critical { color:#ff6b6b; font-weight:700; }
+.sev-high     { color:#ff6b6b; font-weight:700; }
+.sev-medium   { color:#ffb86c; font-weight:600; }
+.sev-low      { color:#f1fa8c; }
+.sev-informational { color:#6272a4; }
+.meta { color:#8b949e; font-size:.9rem; }
+ul li { margin:.2rem 0; }
+</style>
+</head>
+<body>
+  <h1>Cortex Analysis Report</h1>
+  <p class="meta"><strong>Subject:</strong> Phishing / 419 Advance-Fee Scam (as a class) — Authorization Context Analysis<br>
+  <strong>Analyzed:</strong> 2026-04-18T17:14:59.259953Z<br>
+  <strong>Source:</strong> <code>examples/phishing_419_scam.md</code></p>
+
+  <h2>Summary</h2>
+  <ul>
+    <li>Severity: <span class="sev-critical">🔴 Critical</span></li>
+    <li>Operations (skeleton): 4</li>
+    <li>Authorization violations: 11</li>
+    <li>Context notes: 11</li>
+    <li>Skeleton → Violation gap: +7</li>
+  </ul>
+
+  <h2>Skeleton vs. Violations</h2>
+  <blockquote>The gap between what code <em>does</em> and what it <em>assumes the right to do</em> is the attack surface.</blockquote>
+  <table>
+    <thead><tr><th>#</th><th>Skeleton</th><th>Violation</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Attacker composes and sends a single unsolicited email (or SMS, or DM) to a recipient whose address was obtained from a breach dump, scraping, or purchased list</td><td>Assumes right to contact the recipient at all, despite having no prior relationship, consent, or legitimate business</td></tr>
+      <tr><td>2</td><td>The message presents a scripted narrative (Nigerian prince in political exile, inheritance recovery, lottery winnings, fictitious invoice, package-delivery failure, tax refund, compromised account alert, CEO urgent wire request, fake job offer, romance contact)</td><td>Assumes right to impersonate a person, a business, a government agency, a bank, a courier, a romantic partner, or a family member without their consent or knowledge</td></tr>
+      <tr><td>3</td><td>The message requests one of: (a) a reply, (b) a click on an attacker-controlled link, (c) opening an attachment, (d) transfer of funds, (e) purchase of gift cards, (f) sharing of an MFA code or credential</td><td>Assumes right to manufacture an urgency or fear or hope state in the recipient for purposes of bypassing the recipient&#x27;s normal judgment</td></tr>
+      <tr><td>4</td><td>No exploitation of a software vulnerability; no malware required for the primary attack path; the execution context is the recipient&#x27;s reading, cognition, and decision-making</td><td>Assumes right to solicit funds, credentials, MFA codes, personal identifying information, or account access on false pretenses</td></tr>
+      <tr><td>5</td><td>—</td><td>Assumes right to induce the recipient to take action against their own interests, their employer&#x27;s interests, or their family&#x27;s interests, including actions with permanent financial consequence</td></tr>
+      <tr><td>6</td><td>—</td><td>Assumes right to conduct the operation at global scale against millions of recipients simultaneously, selecting those whose life circumstances (bereavement, loneliness, financial pressure, new employment, recent loss) make them disproportionately likely to respond</td></tr>
+      <tr><td>7</td><td>—</td><td>Assumes right to re-engage successful victims repeatedly, a pattern known as &quot;re-victimization&quot; in which a responsive victim is re-scripted into further payments indefinitely</td></tr>
+      <tr><td>8</td><td>—</td><td>Assumes right to operate from jurisdictions whose law-enforcement cooperation with the victim&#x27;s jurisdiction is weak or nonexistent, effectively immunizing the attacker from consequence</td></tr>
+      <tr><td>9</td><td>—</td><td>Assumes right to treat the recipient&#x27;s personal data (email address, name, sometimes phone number or more) as an input commodity, trading breach dumps and target lists among operator networks as ordinary commerce</td></tr>
+      <tr><td>10</td><td>—</td><td>Assumes right to cause collateral harm to third parties named in impersonation scripts (the real bank whose name is used, the real courier whose brand is copied, the real executive whose voice is cloned, the deceased relative whose name is invoked)</td></tr>
+      <tr><td>11</td><td>—</td><td>Assumes right to exploit the structural feature that the global email system has no enforceable sender-identity requirement, and the structural feature that attention and credulity are not defended resources at any layer of the stack</td></tr>
+    </tbody>
+  </table>
+
+  <h2>[SKELETON] — What It Actually Does</h2>
+  <ul>
+    <li>Attacker composes and sends a single unsolicited email (or SMS, or DM) to a recipient whose address was obtained from a breach dump, scraping, or purchased list</li>
+    <li>The message presents a scripted narrative (Nigerian prince in political exile, inheritance recovery, lottery winnings, fictitious invoice, package-delivery failure, tax refund, compromised account alert, CEO urgent wire request, fake job offer, romance contact)</li>
+    <li>The message requests one of: (a) a reply, (b) a click on an attacker-controlled link, (c) opening an attachment, (d) transfer of funds, (e) purchase of gift cards, (f) sharing of an MFA code or credential</li>
+    <li>No exploitation of a software vulnerability; no malware required for the primary attack path; the execution context is the recipient&#x27;s reading, cognition, and decision-making</li>
+  </ul>
+
+  <h2>[VIOLATIONS] — Authorization Gaps</h2>
+  <ul>
+    <li>Assumes right to contact the recipient at all, despite having no prior relationship, consent, or legitimate business</li>
+    <li>Assumes right to impersonate a person, a business, a government agency, a bank, a courier, a romantic partner, or a family member without their consent or knowledge</li>
+    <li>Assumes right to manufacture an urgency or fear or hope state in the recipient for purposes of bypassing the recipient&#x27;s normal judgment</li>
+    <li>Assumes right to solicit funds, credentials, MFA codes, personal identifying information, or account access on false pretenses</li>
+    <li>Assumes right to induce the recipient to take action against their own interests, their employer&#x27;s interests, or their family&#x27;s interests, including actions with permanent financial consequence</li>
+    <li>Assumes right to conduct the operation at global scale against millions of recipients simultaneously, selecting those whose life circumstances (bereavement, loneliness, financial pressure, new employment, recent loss) make them disproportionately likely to respond</li>
+    <li>Assumes right to re-engage successful victims repeatedly, a pattern known as &quot;re-victimization&quot; in which a responsive victim is re-scripted into further payments indefinitely</li>
+    <li>Assumes right to operate from jurisdictions whose law-enforcement cooperation with the victim&#x27;s jurisdiction is weak or nonexistent, effectively immunizing the attacker from consequence</li>
+    <li>Assumes right to treat the recipient&#x27;s personal data (email address, name, sometimes phone number or more) as an input commodity, trading breach dumps and target lists among operator networks as ordinary commerce</li>
+    <li>Assumes right to cause collateral harm to third parties named in impersonation scripts (the real bank whose name is used, the real courier whose brand is copied, the real executive whose voice is cloned, the deceased relative whose name is invoked)</li>
+    <li>Assumes right to exploit the structural feature that the global email system has no enforceable sender-identity requirement, and the structural feature that attention and credulity are not defended resources at any layer of the stack</li>
+  </ul>
+
+  <h2>[CONTEXT] — Why the Violations Matter</h2>
+  <ul>
+    <li>Introduces a violation class not yet in the corpus: *cognitive-surface targeting under pure social engineering*. Every prior sample used some technical primitive; this sample uses zero. The target is the recipient&#x27;s attention and judgment, and the attack surface is defended only by the recipient&#x27;s skepticism — a resource that erodes under stress, fatigue, loneliness, or urgency</li>
+    <li>Positive skeleton-to-violation gap is the framework-level teaching move: a single operation (send message) claims a dozen distinct authorizations. The framework correctly surfaces that the attacker&#x27;s claimed authority is radically disproportionate to the observable action</li>
+    <li>Connects this sample to SUNBURST&#x27;s *identity-layer forgery*: the phishing email manufactures an identity claim the recipient cannot cryptographically verify. The delta is that SUNBURST forges tokens inside a protocol designed to enforce identity, while phishing forges identity in a protocol (email) that never promised to</li>
+    <li>Global scale: FBI IC3 reports tens of billions of dollars in annual losses from business email compromise and romance scams alone; total phishing / social-engineering fraud is estimated to exceed all ransomware losses combined</li>
+    <li>Victim harm is not recoverable in the way technical compromise is: there is no &quot;patch and restore&quot; for elderly victims whose retirement savings have been extracted over months of romance fraud, or for employees fired after falling for a CEO-impersonation wire request</li>
+    <li>The violation is concentrated on whoever is already most vulnerable: recent bereavement, cognitive decline, isolation, financial distress, immigration uncertainty, first-job inexperience — the attacker&#x27;s targeting logic optimizes for response rate, which correlates with the recipient&#x27;s reduced ability to scrutinize</li>
+    <li>Re-victimization is the definitional pattern: responsive targets receive escalating scripts, additional operators, and cross-referred pitches. The violation compounds over the victim&#x27;s lifetime in a way no single message foreshadows</li>
+    <li>Law-enforcement response is structurally poor: the attacker operates from one jurisdiction, the platform from a second, the victim in a third, the funds laundered through a fourth. No institution has end-to-end responsibility, and the marginal cost of attempting another victim is near zero</li>
+    <li>Connects to the *pretense violation* class (NotPetya, prompt injection): the phishing message lies about what it is. It claims to be from a bank, a prince, a courier, a colleague, a lover. The violation is the categorization fraud, executed in natural language, at scale</li>
+    <li>Cortex-level implication: the framework was initially intuitive on malware (which performs many operations and claims many rights) and on tool repositories (which perform many operations and claim none). Phishing is the third shape: few operations, many claimed rights. This completes the dimensional picture — the framework holds across *operation-rich / right-rich* (worms), *operation-rich / right-empty* (tools), and *operation-poor / right-rich* (social engineering) cases</li>
+    <li>Historical provenance: &quot;advance-fee fraud&quot; predates the internet by more than a century. The &quot;Spanish prisoner&quot; confidence trick (17th century onward) uses the identical authorization-claim structure as the Nigerian-prince email, which is itself predated by fax-based and letter-based variants. The technical medium changes; the violation class is invariant. This is further evidence that the framework&#x27;s unit of analysis (authorization context) is correctly chosen — it generalizes across media because authorization is a property of the consent relationship, not of the delivery layer</li>
+  </ul>
+
+  <h2>Impact Statement</h2>
+  <p>This artifact exhibits **11** distinct authorization violations at **critical** severity. The gap between what the code technically does (the skeleton) and what the system owner actually consented to is the entire attack surface. Operations that look benign in isolation become hostile when executed without the owner&#x27;s knowledge, intent, or ability to refuse.</p>
+</body>
+</html>

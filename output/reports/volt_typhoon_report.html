@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Volt Typhoon (2021–present, disclosed 2023–2024) — Authorization Context Analysis — Cortex Report</title>
+<style>
+:root { color-scheme: dark; }
+body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width: 960px;
+       margin: 2rem auto; padding: 0 1rem; background:#0d1117; color:#e6edf3; }
+h1, h2 { border-bottom:1px solid #30363d; padding-bottom:.3rem; }
+code, pre { background:#161b22; padding:.1rem .3rem; border-radius:4px; }
+table { border-collapse: collapse; width:100%; margin: 1rem 0; }
+th, td { border:1px solid #30363d; padding:.5rem .6rem; vertical-align: top; text-align:left; }
+th { background:#161b22; }
+blockquote { color:#8b949e; border-left:3px solid #30363d; margin:.5rem 0; padding:.2rem .8rem; }
+.sev-critical { color:#ff6b6b; font-weight:700; }
+.sev-high     { color:#ff6b6b; font-weight:700; }
+.sev-medium   { color:#ffb86c; font-weight:600; }
+.sev-low      { color:#f1fa8c; }
+.sev-informational { color:#6272a4; }
+.meta { color:#8b949e; font-size:.9rem; }
+ul li { margin:.2rem 0; }
+</style>
+</head>
+<body>
+  <h1>Cortex Analysis Report</h1>
+  <p class="meta"><strong>Subject:</strong> Volt Typhoon (2021–present, disclosed 2023–2024) — Authorization Context Analysis<br>
+  <strong>Analyzed:</strong> 2026-04-18T17:14:59.430053Z<br>
+  <strong>Source:</strong> <code>examples/volt_typhoon.md</code></p>
+
+  <h2>Summary</h2>
+  <ul>
+    <li>Severity: <span class="sev-critical">🔴 Critical</span></li>
+    <li>Operations (skeleton): 26</li>
+    <li>Authorization violations: 15</li>
+    <li>Context notes: 14</li>
+    <li>Skeleton → Violation gap: -11</li>
+  </ul>
+
+  <h2>Skeleton vs. Violations</h2>
+  <blockquote>The gap between what code <em>does</em> and what it <em>assumes the right to do</em> is the attack surface.</blockquote>
+  <table>
+    <thead><tr><th>#</th><th>Skeleton</th><th>Violation</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Conducts extensive pre-compromise reconnaissance (FOFA, Shodan, Censys, victim-owned websites, OSINT on IT and network staff)</td><td>Assumes right to compromise internet-facing network appliances and inherit whatever trust relationships their defective credential storage exposes</td></tr>
+      <tr><td>2</td><td>Gains initial access by exploiting known and zero-day vulnerabilities in public-facing network appliances from Fortinet, Ivanti Connect Secure, NETGEAR, Citrix, and Cisco</td><td>Assumes right to operate inside victim networks using exclusively the same tools the legitimate administrators use, laundering attacker activity through legitimate system behavior</td></tr>
+      <tr><td>3</td><td>In one confirmed compromise, exploits CVE-2022-42475 on an unpatched FortiGate 300D perimeter firewall, including harvesting a domain administrator credential stored insecurely on the appliance itself</td><td>Assumes right to extract the entire credential store of the victim&#x27;s identity provider (`NTDS.dit`) and re-extract it repeatedly over multiple years to maintain currency</td></tr>
+      <tr><td>4</td><td>Connects to victim networks via VPN sessions using harvested valid credentials, blending with legitimate remote-user traffic</td><td>Assumes right to impersonate any user in the domain, including the most privileged accounts, by cracking harvested hashes offline where no network-side rate limiting applies</td></tr>
+      <tr><td>5</td><td>Operates entirely through Living Off the Land (LOTL) techniques — native Windows binaries such as `cmd`, `certutil`, `dnscmd`, `ldifde`, `makecab`, `net`, `netsh`, `nltest`, `netstat`, `ntdsutil`, `ping`, `PowerShell`, `quser`, `reg`, `systeminfo`, `tasklist`, `wevtutil`, `whoami`, `wmic`, `xcopy`</td><td>Assumes right to dump process memory of the credential-handling component of the operating system (LSASS) to recover live session credentials</td></tr>
+      <tr><td>6</td><td>Rarely deploys custom malware post-compromise; instead relies on hands-on-keyboard operator activity to avoid leaving artifacts</td><td>Assumes right to read personal browser state belonging to named individual administrators, including stored passwords and browsing history, as a path into their personal identity perimeter</td></tr>
+      <tr><td>7</td><td>Extracts the Active Directory database (`NTDS.dit`) via the Volume Shadow Copy Service, using `vssadmin` and `ntdsutil` through WMIC, to bypass live-volume file locking</td><td>Assumes right to target the personal email accounts of identified IT and network staff in order to cross from the work identity context into the personal identity context</td></tr>
+      <tr><td>8</td><td>Cracks extracted password hashes offline (brute force, dictionary, rainbow tables) to recover plaintext credentials for any domain account</td><td>Assumes right to maintain stealthy, undetected presence on victim networks for periods measured in years, with the authoring agencies reporting dwell times of at least five years in some environments</td></tr>
+      <tr><td>9</td><td>Repeatedly re-extracts `NTDS.dit` from the same victim over time (observed: three extractions over four years at one victim, two extractions over nine months at another) to keep harvested credentials current</td><td>Assumes right to pre-position on IT networks not for intelligence-gathering but for forward-option disruption or destruction of operational technology, at a future moment of the attacker&#x27;s choosing</td></tr>
+      <tr><td>10</td><td>Dumps LSASS process memory using a downloaded outdated copy of `comsvcs.dll` plus MiniDump, to capture in-memory credentials</td><td>Assumes right to traverse from IT enclaves to OT-adjacent servers and to stage access to industrial control systems responsible for water treatment, electricity distribution, and other public-safety-critical functions</td></tr>
+      <tr><td>11</td><td>Deploys Mimikatz and Impacket (confirmed by incident responders and industry partners) for additional credential access</td><td>Assumes right to compromise third-party SOHO routers belonging to uninvolved consumers and small businesses and weaponize them as attacker C2 infrastructure</td></tr>
+      <tr><td>12</td><td>Targets network administrator browser data — Chrome Local State (containing the AES encryption key) and Login Data — to recover plaintext passwords from browsers</td><td>Assumes right to modify legitimate infrastructure (PRTG servers, network admin workstations) to serve attacker C2 purposes</td></tr>
+      <tr><td>13</td><td>Targets personal email addresses of key network and IT staff, post-compromise, as an additional credential and intelligence source</td><td>Assumes right to delete defender-side evidence of its own presence, denying the owner the ability to reconstruct what happened</td></tr>
+      <tr><td>14</td><td>Moves laterally via RDP with harvested domain-admin credentials, and via PSExec using the `accepteula` command-line flag for unattended execution</td><td>Assumes right to hold a *standing option* over victim infrastructure without ever having to exercise it — the authorization violation is the ongoing capability, not any single act</td></tr>
+      <tr><td>15</td><td>In one confirmed intrusion into a Water and Wastewater Systems entity, moved over nine months from initial access to file server, to domain controller, to Oracle Management Server, to VMware vCenter server adjacent to OT assets</td><td>Zero transparency to the victim at any layer; zero scope bound; no withdrawal mechanism; no consent at any tier of the multi-victim topology (appliance owners, router owners, IT staff, end users)</td></tr>
+      <tr><td>16</td><td>Interacts with saved PuTTY profiles on the vCenter server, including stored sessions for water treatment plants, water wells, an electrical substation, OT systems, and network security devices</td><td>—</td></tr>
+      <tr><td>17</td><td>Tests access to domain-joined OT assets using vendor default credentials, and in some cases accesses OT systems whose credentials were recovered via NTDS.dit theft</td><td>—</td></tr>
+      <tr><td>18</td><td>In one confirmed compromise, was positioned to move from one control system to a second control system</td><td>—</td></tr>
+      <tr><td>19</td><td>Deploys FRP (Fast Reverse Proxy) clients (e.g., `BrightmetricAgent.exe`, `SMSvcService.exe`, UPX-packed) on victim corporate infrastructure for encrypted reverse-proxy C2</td><td>—</td></tr>
+      <tr><td>20</td><td>Uses `netsh` PortProxy registry modifications on legitimate servers (e.g., a Paessler PRTG server) to convert them into intermediate proxies for C2 traffic</td><td>—</td></tr>
+      <tr><td>21</td><td>Routes final C2 through multi-hop proxies composed of virtual private servers and compromised end-of-life SOHO routers (Cisco, NETGEAR) implanted with KV Botnet malware</td><td>—</td></tr>
+      <tr><td>22</td><td>Selectively clears Windows Event Logs (Event ID 1102), system logs, and other artifacts to remove intrusion evidence</td><td>—</td></tr>
+      <tr><td>23</td><td>Masquerades attacker file names as legitimate binaries (`ronf.exe` = renamed `rar.exe` for staging)</td><td>—</td></tr>
+      <tr><td>24</td><td>Abstains from using compromised credentials outside the victim&#x27;s normal working hours in some cases, to avoid anomaly-detection alerts</td><td>—</td></tr>
+      <tr><td>25</td><td>Exfiltrates OT-facing documentation (SCADA diagrams, relay/switchgear documentation, construction drawings, facilities data) over SMB in zipped archives</td><td>—</td></tr>
+      <tr><td>26</td><td>Once stable credential access is established, exhibits minimal activity — the objective is persistent presence, not immediate exploitation</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h2>[SKELETON] — What It Actually Does</h2>
+  <ul>
+    <li>Conducts extensive pre-compromise reconnaissance (FOFA, Shodan, Censys, victim-owned websites, OSINT on IT and network staff)</li>
+    <li>Gains initial access by exploiting known and zero-day vulnerabilities in public-facing network appliances from Fortinet, Ivanti Connect Secure, NETGEAR, Citrix, and Cisco</li>
+    <li>In one confirmed compromise, exploits CVE-2022-42475 on an unpatched FortiGate 300D perimeter firewall, including harvesting a domain administrator credential stored insecurely on the appliance itself</li>
+    <li>Connects to victim networks via VPN sessions using harvested valid credentials, blending with legitimate remote-user traffic</li>
+    <li>Operates entirely through Living Off the Land (LOTL) techniques — native Windows binaries such as `cmd`, `certutil`, `dnscmd`, `ldifde`, `makecab`, `net`, `netsh`, `nltest`, `netstat`, `ntdsutil`, `ping`, `PowerShell`, `quser`, `reg`, `systeminfo`, `tasklist`, `wevtutil`, `whoami`, `wmic`, `xcopy`</li>
+    <li>Rarely deploys custom malware post-compromise; instead relies on hands-on-keyboard operator activity to avoid leaving artifacts</li>
+    <li>Extracts the Active Directory database (`NTDS.dit`) via the Volume Shadow Copy Service, using `vssadmin` and `ntdsutil` through WMIC, to bypass live-volume file locking</li>
+    <li>Cracks extracted password hashes offline (brute force, dictionary, rainbow tables) to recover plaintext credentials for any domain account</li>
+    <li>Repeatedly re-extracts `NTDS.dit` from the same victim over time (observed: three extractions over four years at one victim, two extractions over nine months at another) to keep harvested credentials current</li>
+    <li>Dumps LSASS process memory using a downloaded outdated copy of `comsvcs.dll` plus MiniDump, to capture in-memory credentials</li>
+    <li>Deploys Mimikatz and Impacket (confirmed by incident responders and industry partners) for additional credential access</li>
+    <li>Targets network administrator browser data — Chrome Local State (containing the AES encryption key) and Login Data — to recover plaintext passwords from browsers</li>
+    <li>Targets personal email addresses of key network and IT staff, post-compromise, as an additional credential and intelligence source</li>
+    <li>Moves laterally via RDP with harvested domain-admin credentials, and via PSExec using the `accepteula` command-line flag for unattended execution</li>
+    <li>In one confirmed intrusion into a Water and Wastewater Systems entity, moved over nine months from initial access to file server, to domain controller, to Oracle Management Server, to VMware vCenter server adjacent to OT assets</li>
+    <li>Interacts with saved PuTTY profiles on the vCenter server, including stored sessions for water treatment plants, water wells, an electrical substation, OT systems, and network security devices</li>
+    <li>Tests access to domain-joined OT assets using vendor default credentials, and in some cases accesses OT systems whose credentials were recovered via NTDS.dit theft</li>
+    <li>In one confirmed compromise, was positioned to move from one control system to a second control system</li>
+    <li>Deploys FRP (Fast Reverse Proxy) clients (e.g., `BrightmetricAgent.exe`, `SMSvcService.exe`, UPX-packed) on victim corporate infrastructure for encrypted reverse-proxy C2</li>
+    <li>Uses `netsh` PortProxy registry modifications on legitimate servers (e.g., a Paessler PRTG server) to convert them into intermediate proxies for C2 traffic</li>
+    <li>Routes final C2 through multi-hop proxies composed of virtual private servers and compromised end-of-life SOHO routers (Cisco, NETGEAR) implanted with KV Botnet malware</li>
+    <li>Selectively clears Windows Event Logs (Event ID 1102), system logs, and other artifacts to remove intrusion evidence</li>
+    <li>Masquerades attacker file names as legitimate binaries (`ronf.exe` = renamed `rar.exe` for staging)</li>
+    <li>Abstains from using compromised credentials outside the victim&#x27;s normal working hours in some cases, to avoid anomaly-detection alerts</li>
+    <li>Exfiltrates OT-facing documentation (SCADA diagrams, relay/switchgear documentation, construction drawings, facilities data) over SMB in zipped archives</li>
+    <li>Once stable credential access is established, exhibits minimal activity — the objective is persistent presence, not immediate exploitation</li>
+  </ul>
+
+  <h2>[VIOLATIONS] — Authorization Gaps</h2>
+  <ul>
+    <li>Assumes right to compromise internet-facing network appliances and inherit whatever trust relationships their defective credential storage exposes</li>
+    <li>Assumes right to operate inside victim networks using exclusively the same tools the legitimate administrators use, laundering attacker activity through legitimate system behavior</li>
+    <li>Assumes right to extract the entire credential store of the victim&#x27;s identity provider (`NTDS.dit`) and re-extract it repeatedly over multiple years to maintain currency</li>
+    <li>Assumes right to impersonate any user in the domain, including the most privileged accounts, by cracking harvested hashes offline where no network-side rate limiting applies</li>
+    <li>Assumes right to dump process memory of the credential-handling component of the operating system (LSASS) to recover live session credentials</li>
+    <li>Assumes right to read personal browser state belonging to named individual administrators, including stored passwords and browsing history, as a path into their personal identity perimeter</li>
+    <li>Assumes right to target the personal email accounts of identified IT and network staff in order to cross from the work identity context into the personal identity context</li>
+    <li>Assumes right to maintain stealthy, undetected presence on victim networks for periods measured in years, with the authoring agencies reporting dwell times of at least five years in some environments</li>
+    <li>Assumes right to pre-position on IT networks not for intelligence-gathering but for forward-option disruption or destruction of operational technology, at a future moment of the attacker&#x27;s choosing</li>
+    <li>Assumes right to traverse from IT enclaves to OT-adjacent servers and to stage access to industrial control systems responsible for water treatment, electricity distribution, and other public-safety-critical functions</li>
+    <li>Assumes right to compromise third-party SOHO routers belonging to uninvolved consumers and small businesses and weaponize them as attacker C2 infrastructure</li>
+    <li>Assumes right to modify legitimate infrastructure (PRTG servers, network admin workstations) to serve attacker C2 purposes</li>
+    <li>Assumes right to delete defender-side evidence of its own presence, denying the owner the ability to reconstruct what happened</li>
+    <li>Assumes right to hold a *standing option* over victim infrastructure without ever having to exercise it — the authorization violation is the ongoing capability, not any single act</li>
+    <li>Zero transparency to the victim at any layer; zero scope bound; no withdrawal mechanism; no consent at any tier of the multi-victim topology (appliance owners, router owners, IT staff, end users)</li>
+  </ul>
+
+  <h2>[CONTEXT] — Why the Violations Matter</h2>
+  <ul>
+    <li>U.S. CISA, NSA, and FBI assess with high confidence that Volt Typhoon actors are pre-positioning on U.S. critical infrastructure IT networks to enable disruption of OT functions in the event of crisis or conflict with the United States</li>
+    <li>Confirmed compromises span Communications, Energy, Transportation Systems, and Water and Wastewater Systems sectors, including in Guam and other non-continental U.S. territories</li>
+    <li>U.S. authoring agencies explicitly note the targeting pattern &quot;is not consistent with traditional cyber espionage or intelligence gathering operations&quot; — the violation is preparation for disruption, not collection</li>
+    <li>Observed dwell times of at least five years in some victim environments; credentials were being repeatedly refreshed over multi-year windows, indicating the attacker treats access as a long-lived strategic asset rather than a tactical one</li>
+    <li>Co-signed by NSA, FBI, DOE, EPA, TSA, Australian ACSC, Canadian CCCS, UK NCSC, and New Zealand NCSC — the scope is not a single-agency assessment but a Five Eyes + critical-infrastructure-partner consensus position</li>
+    <li>Introduces a violation class not yet in the corpus: *Living-off-the-Land as authorization camouflage* — every individual operation performed by Volt Typhoon is something a legitimate administrator routinely does; the violation exists only in the actor&#x27;s identity and the pattern across operations, not in any single technical primitive</li>
+    <li>Introduces a second new violation class: *standing-option occupation* — the attacker holds an ongoing authorization they have granted themselves over the victim&#x27;s infrastructure, choosing never to exercise it in most windows; the violation is the sustained capability, not any discrete harmful act</li>
+    <li>Introduces a third new violation class: *personal-perimeter crossing* — targeting the personal email accounts of identified IT staff deliberately crosses from the employer-owned identity context into the employee-owned identity context, without any authorization relationship existing in the personal domain</li>
+    <li>Owner-exclusion is systemic: conventional indicators of compromise are deliberately absent because no malware is used, defender behavioral baselines are often not mature enough to detect LOTL pattern deviations, and log deletion removes remaining post-hoc forensic ground truth</li>
+    <li>Third-party collateral targeting at scale — the compromised SOHO routers (KV Botnet) are owned by uninvolved consumers and small businesses whose devices have been conscripted into nation-state C2 infrastructure without their knowledge; DOJ disrupted the botnet in early 2024 but the impressment pattern continues</li>
+    <li>Sets a precedent for an ongoing campaign, not a discrete incident — Volt Typhoon intrusions remain active and new compromises continue to be discovered; remediation at any one victim does not terminate the campaign</li>
+    <li>The choice to target water, energy, and transportation sectors signals intent to affect civilian public-safety outcomes in a future conflict — the violation is most fully understood as the cyber correlate of pre-positioning covert forces inside civilian infrastructure in advance of potential hostilities</li>
+    <li>U.S. authoring agencies note that some victims are smaller organizations with limited cybersecurity capacity providing critical services to larger organizations or key geographic locations — the attacker deliberately chooses weaker nodes in the supply chain of criticality</li>
+    <li>No meaningful consequences have been imposed on the PRC for this campaign; no international framework addresses standing-option occupation of civilian critical infrastructure as a distinct category of hostile state action</li>
+  </ul>
+
+  <h2>Impact Statement</h2>
+  <p>This artifact exhibits **15** distinct authorization violations at **critical** severity. The gap between what the code technically does (the skeleton) and what the system owner actually consented to is the entire attack surface. Operations that look benign in isolation become hostile when executed without the owner&#x27;s knowledge, intent, or ability to refuse.</p>
+</body>
+</html>

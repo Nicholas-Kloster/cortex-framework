@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SolarWinds SUNBURST (March–December 2020) — Authorization Context Analysis — Cortex Report</title>
+<style>
+:root { color-scheme: dark; }
+body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width: 960px;
+       margin: 2rem auto; padding: 0 1rem; background:#0d1117; color:#e6edf3; }
+h1, h2 { border-bottom:1px solid #30363d; padding-bottom:.3rem; }
+code, pre { background:#161b22; padding:.1rem .3rem; border-radius:4px; }
+table { border-collapse: collapse; width:100%; margin: 1rem 0; }
+th, td { border:1px solid #30363d; padding:.5rem .6rem; vertical-align: top; text-align:left; }
+th { background:#161b22; }
+blockquote { color:#8b949e; border-left:3px solid #30363d; margin:.5rem 0; padding:.2rem .8rem; }
+.sev-critical { color:#ff6b6b; font-weight:700; }
+.sev-high     { color:#ff6b6b; font-weight:700; }
+.sev-medium   { color:#ffb86c; font-weight:600; }
+.sev-low      { color:#f1fa8c; }
+.sev-informational { color:#6272a4; }
+.meta { color:#8b949e; font-size:.9rem; }
+ul li { margin:.2rem 0; }
+</style>
+</head>
+<body>
+  <h1>Cortex Analysis Report</h1>
+  <p class="meta"><strong>Subject:</strong> SolarWinds SUNBURST (March–December 2020) — Authorization Context Analysis<br>
+  <strong>Analyzed:</strong> 2026-04-18T17:14:59.347773Z<br>
+  <strong>Source:</strong> <code>examples/sunburst.md</code></p>
+
+  <h2>Summary</h2>
+  <ul>
+    <li>Severity: <span class="sev-critical">🔴 Critical</span></li>
+    <li>Operations (skeleton): 18</li>
+    <li>Authorization violations: 12</li>
+    <li>Context notes: 13</li>
+    <li>Skeleton → Violation gap: -6</li>
+  </ul>
+
+  <h2>Skeleton vs. Violations</h2>
+  <blockquote>The gap between what code <em>does</em> and what it <em>assumes the right to do</em> is the attack surface.</blockquote>
+  <table>
+    <thead><tr><th>#</th><th>Skeleton</th><th>Violation</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Compromises the SolarWinds build pipeline and inserts a trojanized DLL (`solarwinds.orion.core.businesslayer.dll`) into affected Orion Platform releases (2019.4 HF5 through 2020.2 HF1)</td><td>Assumes right to insert attacker-controlled code into a software vendor&#x27;s build pipeline without the vendor&#x27;s awareness</td></tr>
+      <tr><td>2</td><td>Allows the trojanized DLL to be signed by SolarWinds&#x27; own legitimate code-signing certificate as part of the vendor&#x27;s standard build process</td><td>Assumes right to have malicious code signed by the victim vendor&#x27;s own legitimate certificate, laundering the malicious artifact through the vendor&#x27;s intact trust chain</td></tr>
+      <tr><td>3</td><td>Distributes the signed, backdoored update to ~18,000 Orion customers through the vendor&#x27;s normal update channel</td><td>Assumes right to distribute malicious software through a trusted update channel to every customer, then later select which of those customers actually gets exploited</td></tr>
+      <tr><td>4</td><td>Implements a dormancy period after installation before initiating any network activity</td><td>Assumes right to exploit the pervasive privilege SolarWinds Orion holds in customer networks by virtue of its monitoring function</td></tr>
+      <tr><td>5</td><td>Beacons to a per-victim subdomain of `avsvmcloud[.]com` using a protocol crafted to imitate legitimate SolarWinds telemetry</td><td>Assumes right to forge SAML tokens that any federated service must accept as genuine, because the signing certificate itself is now attacker-controlled</td></tr>
+      <tr><td>6</td><td>Selectively delivers second-stage infrastructure (TEARDROP, RAINDROP, Cobalt Strike BEACON) only to a narrow subset of infected organizations of interest to the operator</td><td>Assumes right to manufacture trust inside the victim&#x27;s identity layer rather than merely stealing an existing credential — the forged tokens are cryptographically valid</td></tr>
+      <tr><td>7</td><td>Uses DGA-style subdomains and DNS CNAME responses to direct follow-on command and control to rotating IP addresses</td><td>Assumes right to add new federation trusts to on-premises identity infrastructure, creating attacker-controlled identity providers the victim does not see</td></tr>
+      <tr><td>8</td><td>Applies sandbox-detection checks against hardcoded IPv4/IPv6 ranges (including RFC-reserved addresses) and halts on hits</td><td>Assumes right to impersonate any user the compromised identity provider can authenticate, across all SaaS and cloud services the organization has federated</td></tr>
+      <tr><td>9</td><td>Applies time-threshold checks to produce unpredictable delays between C2 attempts, defeating network-based timing analysis</td><td>Assumes right to access email belonging to the very personnel responsible for detecting and responding to the intrusion</td></tr>
+      <tr><td>10</td><td>Uses steganography to obscure C2 communications (per FireEye)</td><td>Assumes right to operate for many months inside compromised environments without triggering detection, by deliberately mimicking legitimate SolarWinds protocol behavior and legitimate administrator activity</td></tr>
+      <tr><td>11</td><td>Routes C2 traffic through VPS infrastructure geolocated in the victim&#x27;s own country and rotates last-mile IPs frequently</td><td>Assumes right to fragment its own signature across many hosts, relying on the dormancy and selectivity to prevent cross-victim correlation</td></tr>
+      <tr><td>12</td><td>Escalates privileges within Active Directory to compromise the SAML token-signing certificate (&quot;Golden SAML&quot;)</td><td>Zero authorization checks at any layer; no consent from vendor, from any intermediate customer, or from users whose tokens were forged</td></tr>
+      <tr><td>13</td><td>Forges valid, unauthorized SAML tokens and presents them to cloud and SaaS services that federate trust to the compromised identity provider</td><td>—</td></tr>
+      <tr><td>14</td><td>Adds attacker-controlled authentication credentials (tokens, certificates) to existing Azure / Microsoft 365 application service principals</td><td>—</td></tr>
+      <tr><td>15</td><td>Adds new federation trusts to on-premises AD FS infrastructure to enable authentication from outside the victim&#x27;s known identity perimeter</td><td>—</td></tr>
+      <tr><td>16</td><td>Accesses hosted email, SharePoint, OneDrive, and other SAML-trusting services via Microsoft Graph API and similar programmatic interfaces</td><td>—</td></tr>
+      <tr><td>17</td><td>Targets email accounts of IT staff and incident responders specifically</td><td>—</td></tr>
+      <tr><td>18</td><td>Uses password guessing, password spraying, and previously-stolen secret keys to bypass MFA (e.g., Duo cookie-forgery at Volexity)</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h2>[SKELETON] — What It Actually Does</h2>
+  <ul>
+    <li>Compromises the SolarWinds build pipeline and inserts a trojanized DLL (`solarwinds.orion.core.businesslayer.dll`) into affected Orion Platform releases (2019.4 HF5 through 2020.2 HF1)</li>
+    <li>Allows the trojanized DLL to be signed by SolarWinds&#x27; own legitimate code-signing certificate as part of the vendor&#x27;s standard build process</li>
+    <li>Distributes the signed, backdoored update to ~18,000 Orion customers through the vendor&#x27;s normal update channel</li>
+    <li>Implements a dormancy period after installation before initiating any network activity</li>
+    <li>Beacons to a per-victim subdomain of `avsvmcloud[.]com` using a protocol crafted to imitate legitimate SolarWinds telemetry</li>
+    <li>Selectively delivers second-stage infrastructure (TEARDROP, RAINDROP, Cobalt Strike BEACON) only to a narrow subset of infected organizations of interest to the operator</li>
+    <li>Uses DGA-style subdomains and DNS CNAME responses to direct follow-on command and control to rotating IP addresses</li>
+    <li>Applies sandbox-detection checks against hardcoded IPv4/IPv6 ranges (including RFC-reserved addresses) and halts on hits</li>
+    <li>Applies time-threshold checks to produce unpredictable delays between C2 attempts, defeating network-based timing analysis</li>
+    <li>Uses steganography to obscure C2 communications (per FireEye)</li>
+    <li>Routes C2 traffic through VPS infrastructure geolocated in the victim&#x27;s own country and rotates last-mile IPs frequently</li>
+    <li>Escalates privileges within Active Directory to compromise the SAML token-signing certificate (&quot;Golden SAML&quot;)</li>
+    <li>Forges valid, unauthorized SAML tokens and presents them to cloud and SaaS services that federate trust to the compromised identity provider</li>
+    <li>Adds attacker-controlled authentication credentials (tokens, certificates) to existing Azure / Microsoft 365 application service principals</li>
+    <li>Adds new federation trusts to on-premises AD FS infrastructure to enable authentication from outside the victim&#x27;s known identity perimeter</li>
+    <li>Accesses hosted email, SharePoint, OneDrive, and other SAML-trusting services via Microsoft Graph API and similar programmatic interfaces</li>
+    <li>Targets email accounts of IT staff and incident responders specifically</li>
+    <li>Uses password guessing, password spraying, and previously-stolen secret keys to bypass MFA (e.g., Duo cookie-forgery at Volexity)</li>
+  </ul>
+
+  <h2>[VIOLATIONS] — Authorization Gaps</h2>
+  <ul>
+    <li>Assumes right to insert attacker-controlled code into a software vendor&#x27;s build pipeline without the vendor&#x27;s awareness</li>
+    <li>Assumes right to have malicious code signed by the victim vendor&#x27;s own legitimate certificate, laundering the malicious artifact through the vendor&#x27;s intact trust chain</li>
+    <li>Assumes right to distribute malicious software through a trusted update channel to every customer, then later select which of those customers actually gets exploited</li>
+    <li>Assumes right to exploit the pervasive privilege SolarWinds Orion holds in customer networks by virtue of its monitoring function</li>
+    <li>Assumes right to forge SAML tokens that any federated service must accept as genuine, because the signing certificate itself is now attacker-controlled</li>
+    <li>Assumes right to manufacture trust inside the victim&#x27;s identity layer rather than merely stealing an existing credential — the forged tokens are cryptographically valid</li>
+    <li>Assumes right to add new federation trusts to on-premises identity infrastructure, creating attacker-controlled identity providers the victim does not see</li>
+    <li>Assumes right to impersonate any user the compromised identity provider can authenticate, across all SaaS and cloud services the organization has federated</li>
+    <li>Assumes right to access email belonging to the very personnel responsible for detecting and responding to the intrusion</li>
+    <li>Assumes right to operate for many months inside compromised environments without triggering detection, by deliberately mimicking legitimate SolarWinds protocol behavior and legitimate administrator activity</li>
+    <li>Assumes right to fragment its own signature across many hosts, relying on the dormancy and selectivity to prevent cross-victim correlation</li>
+    <li>Zero authorization checks at any layer; no consent from vendor, from any intermediate customer, or from users whose tokens were forged</li>
+  </ul>
+
+  <h2>[CONTEXT] — Why the Violations Matter</h2>
+  <ul>
+    <li>Compromised the SolarWinds build pipeline — the damaged trust relationship was not between victim and attacker, but between victim and their own trusted vendor, which propagated automatically through normal software update behavior</li>
+    <li>CISA published this as &quot;a grave risk to the Federal Government and state, local, tribal, and territorial governments as well as critical infrastructure entities and other private sector organizations&quot;</li>
+    <li>U.S. Government formally attributed the activity to the Russian Foreign Intelligence Service (SVR), making this a nation-state intrusion disguised as ordinary vendor update traffic</li>
+    <li>Dwell time exceeded nine months — attackers were inside federal networks from at least March 2020 and were not discovered until December 2020 via FireEye&#x27;s self-disclosure of its own breach</li>
+    <li>Known victims include CISA itself, the Treasury, Commerce, State, DHS, DOE (including NNSA), and Justice departments; estimated ~100 high-value organizations received second-stage follow-on targeting out of ~18,000 that received the backdoor</li>
+    <li>Introduces a violation class not yet in the corpus: *build-pipeline trust subversion* — the attacker did not steal a code-signing certificate (as in Stuxnet), they compromised the signing process itself so the vendor&#x27;s correct signer authenticated malicious code</li>
+    <li>Introduces a second new violation class: *identity-layer forgery* via Golden SAML — the attacker owns the certificate that defines what &quot;authentic&quot; means for the victim organization, making every trust decision downstream structurally unreliable</li>
+    <li>Federated identity abuse means the victim&#x27;s cloud services cannot distinguish attacker from user from inside the protocol itself; detection must come from anomaly patterns, not from authentication layer checks</li>
+    <li>CISA guidance explicitly states that when this level of compromise has occurred, &quot;the entire identity trust store&quot; must be considered compromised and a &quot;full reconstitution of identity and trust services&quot; is required — there is no selective remediation available</li>
+    <li>Operational security targeting of IR personnel&#x27;s own mailboxes means the standard response playbook (coordinate remediation over email) is itself within the attacker&#x27;s observation window</li>
+    <li>Establishes a template for follow-on supply-chain operations: the same TTPs were later reused in Kaseya, 3CX, and other vendor compromises, and previewed the trust-inheritance logic that xz-utils would formalize at the open-source tier</li>
+    <li>Dormancy + selectivity inverts the usual detection calculus: ~18,000 organizations had the artifact but most were never exploited, so artifact presence alone is not compromise evidence and artifact absence is not safety evidence</li>
+    <li>No nation has faced meaningful consequences for the operation; no international framework addresses build-pipeline trust subversion as a distinct category of hostile state action</li>
+  </ul>
+
+  <h2>Impact Statement</h2>
+  <p>This artifact exhibits **12** distinct authorization violations at **critical** severity. The gap between what the code technically does (the skeleton) and what the system owner actually consented to is the entire attack surface. Operations that look benign in isolation become hostile when executed without the owner&#x27;s knowledge, intent, or ability to refuse.</p>
+</body>
+</html>

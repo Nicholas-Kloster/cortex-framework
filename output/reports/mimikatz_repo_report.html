@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>gentilkiwi/mimikatz — Authorization Context Analysis — Cortex Report</title>
+<style>
+:root { color-scheme: dark; }
+body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width: 960px;
+       margin: 2rem auto; padding: 0 1rem; background:#0d1117; color:#e6edf3; }
+h1, h2 { border-bottom:1px solid #30363d; padding-bottom:.3rem; }
+code, pre { background:#161b22; padding:.1rem .3rem; border-radius:4px; }
+table { border-collapse: collapse; width:100%; margin: 1rem 0; }
+th, td { border:1px solid #30363d; padding:.5rem .6rem; vertical-align: top; text-align:left; }
+th { background:#161b22; }
+blockquote { color:#8b949e; border-left:3px solid #30363d; margin:.5rem 0; padding:.2rem .8rem; }
+.sev-critical { color:#ff6b6b; font-weight:700; }
+.sev-high     { color:#ff6b6b; font-weight:700; }
+.sev-medium   { color:#ffb86c; font-weight:600; }
+.sev-low      { color:#f1fa8c; }
+.sev-informational { color:#6272a4; }
+.meta { color:#8b949e; font-size:.9rem; }
+ul li { margin:.2rem 0; }
+</style>
+</head>
+<body>
+  <h1>Cortex Analysis Report</h1>
+  <p class="meta"><strong>Subject:</strong> gentilkiwi/mimikatz — Authorization Context Analysis<br>
+  <strong>Analyzed:</strong> 2026-04-18T17:14:59.175710Z<br>
+  <strong>Source:</strong> <code>examples/mimikatz_repo.md</code></p>
+
+  <h2>Summary</h2>
+  <ul>
+    <li>Severity: <span class="sev-informational">⚪ Informational</span></li>
+    <li>Operations (skeleton): 14</li>
+    <li>Authorization violations: 1</li>
+    <li>Context notes: 12</li>
+    <li>Skeleton → Violation gap: -13</li>
+  </ul>
+
+  <h2>Skeleton vs. Violations</h2>
+  <blockquote>The gap between what code <em>does</em> and what it <em>assumes the right to do</em> is the attack surface.</blockquote>
+  <table>
+    <thead><tr><th>#</th><th>Skeleton</th><th>Violation</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Single-tool repository published by Benjamin Delpy (&quot;gentilkiwi&quot;) on GitHub since 2014; ~21k stars, ~4k forks, original self-described purpose is &quot;a little tool to play with Windows security&quot;</td><td>None at the repository level. The tool operates on the local host, requires administrator or SYSTEM privileges for its most potent capabilities, and makes no assumption about authorization against any remote system; the authorization context is externally supplied by the operator at invocation time. See the CONTEXT section for the capability-concentration implications that distinguish this sample from the mgeeky repository and for the framework observations this sample sharpens.</td></tr>
+      <tr><td>2</td><td>Provides the `sekurlsa` module: extracts plaintext passwords, NT hashes, SHA1 hashes, and Kerberos tickets from the memory of the Windows Local Security Authority Subsystem Service (LSASS) process</td><td>—</td></tr>
+      <tr><td>3</td><td>Provides the `kerberos` module: lists, exports, and re-injects Kerberos tickets; mints &quot;Golden Tickets&quot; when supplied with a domain&#x27;s krbtgt key hash</td><td>—</td></tr>
+      <tr><td>4</td><td>Provides the `crypto` module: exports certificates and private keys from Windows CryptoAPI (CAPI) and Cryptography Next Generation (CNG) key stores</td><td>—</td></tr>
+      <tr><td>5</td><td>Provides the `vault` module: dumps credentials stored in the Windows Credential Manager vault</td><td>—</td></tr>
+      <tr><td>6</td><td>Provides the `lsadump` module: reads SAM database, LSA secrets, domain cached credentials, and supports `dcsync` — replicating password material directly from a domain controller using legitimate replication APIs</td><td>—</td></tr>
+      <tr><td>7</td><td>Provides the `token` module: manipulates Windows access tokens (elevate, revert, impersonate)</td><td>—</td></tr>
+      <tr><td>8</td><td>Provides `privilege::debug` to enable `SeDebugPrivilege`, the Windows privilege required to open LSASS and most other protected processes for memory read</td><td>—</td></tr>
+      <tr><td>9</td><td>Provides pass-the-hash, pass-the-ticket, and over-pass-the-hash operations — authenticating to remote services using harvested credential material rather than plaintext passwords</td><td>—</td></tr>
+      <tr><td>10</td><td>Ships as a Visual Studio solution with multiple build targets: `mimikatz` (the primary CLI), `mimilib` (DLL loadable by other processes including the Windows Authentication Package interface), `mimidrv` (a kernel driver for bypassing Protected Process Light on LSASS), `mimilove` (legacy Windows 2003 support), `mimispool` (printer-spooler-based techniques), `mimicom` (COM server interface)</td><td>—</td></tr>
+      <tr><td>11</td><td>Published under author attribution with email and blog links; binary releases are provided for operators who do not want to build from source</td><td>—</td></tr>
+      <tr><td>12</td><td>Every capability documented in the GitHub wiki with example output and invocation syntax</td><td>—</td></tr>
+      <tr><td>13</td><td>No outbound network communication, no telemetry, no update mechanism — the tool does what the command line says and exits</td><td>—</td></tr>
+      <tr><td>14</td><td>Heavily signatured by every major Windows EDR vendor; operating the published binary on a defended endpoint produces detections</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h2>[SKELETON] — What It Actually Does</h2>
+  <ul>
+    <li>Single-tool repository published by Benjamin Delpy (&quot;gentilkiwi&quot;) on GitHub since 2014; ~21k stars, ~4k forks, original self-described purpose is &quot;a little tool to play with Windows security&quot;</li>
+    <li>Provides the `sekurlsa` module: extracts plaintext passwords, NT hashes, SHA1 hashes, and Kerberos tickets from the memory of the Windows Local Security Authority Subsystem Service (LSASS) process</li>
+    <li>Provides the `kerberos` module: lists, exports, and re-injects Kerberos tickets; mints &quot;Golden Tickets&quot; when supplied with a domain&#x27;s krbtgt key hash</li>
+    <li>Provides the `crypto` module: exports certificates and private keys from Windows CryptoAPI (CAPI) and Cryptography Next Generation (CNG) key stores</li>
+    <li>Provides the `vault` module: dumps credentials stored in the Windows Credential Manager vault</li>
+    <li>Provides the `lsadump` module: reads SAM database, LSA secrets, domain cached credentials, and supports `dcsync` — replicating password material directly from a domain controller using legitimate replication APIs</li>
+    <li>Provides the `token` module: manipulates Windows access tokens (elevate, revert, impersonate)</li>
+    <li>Provides `privilege::debug` to enable `SeDebugPrivilege`, the Windows privilege required to open LSASS and most other protected processes for memory read</li>
+    <li>Provides pass-the-hash, pass-the-ticket, and over-pass-the-hash operations — authenticating to remote services using harvested credential material rather than plaintext passwords</li>
+    <li>Ships as a Visual Studio solution with multiple build targets: `mimikatz` (the primary CLI), `mimilib` (DLL loadable by other processes including the Windows Authentication Package interface), `mimidrv` (a kernel driver for bypassing Protected Process Light on LSASS), `mimilove` (legacy Windows 2003 support), `mimispool` (printer-spooler-based techniques), `mimicom` (COM server interface)</li>
+    <li>Published under author attribution with email and blog links; binary releases are provided for operators who do not want to build from source</li>
+    <li>Every capability documented in the GitHub wiki with example output and invocation syntax</li>
+    <li>No outbound network communication, no telemetry, no update mechanism — the tool does what the command line says and exits</li>
+    <li>Heavily signatured by every major Windows EDR vendor; operating the published binary on a defended endpoint produces detections</li>
+  </ul>
+
+  <h2>[VIOLATIONS] — Authorization Gaps</h2>
+  <ul>
+    <li>None at the repository level. The tool operates on the local host, requires administrator or SYSTEM privileges for its most potent capabilities, and makes no assumption about authorization against any remote system; the authorization context is externally supplied by the operator at invocation time. See the CONTEXT section for the capability-concentration implications that distinguish this sample from the mgeeky repository and for the framework observations this sample sharpens.</li>
+  </ul>
+
+  <h2>[CONTEXT] — Why the Violations Matter</h2>
+  <ul>
+    <li>This is the second boundary-test sample. As with the mgeeky repository, the violation set at artifact level is empty because authorization context is externally supplied, not encoded in the code. The analytical work happens in this section.</li>
+    <li>Where the mgeeky repository demonstrates the framework&#x27;s behavior on *diffuse capability* — many tools, many primitives, most individually unremarkable — Mimikatz demonstrates the framework&#x27;s behavior on *concentrated capability*: a single tool, a narrow domain (Windows credential material), very high per-operation consequence</li>
+    <li>The `sekurlsa::logonpasswords` command in a single invocation can surface every interactive-session credential present in LSASS memory, including domain administrator hashes if any privileged user has recently logged on</li>
+    <li>The `lsadump::dcsync` command in a single invocation can replicate the entire domain credential store from a domain controller by exercising a legitimate replication API, without any file being written to the DC and without invasive techniques that modern defensive tooling would reliably detect</li>
+    <li>The `kerberos::golden` command allows the holder of a domain&#x27;s krbtgt hash to forge TGTs for any user — effectively full, persistent, invisible domain takeover with a single piece of material</li>
+    <li>These are not incremental primitives. Each is a full domain-compromise step in one command. The framework must track that concentrated capability compresses the operator&#x27;s decision space: a legitimate pentest, a red-team engagement, and an unauthorized intrusion all execute the same command; the delta is entirely in the written authorization</li>
+    <li>Capability concentration has a corresponding defender observation: because Mimikatz has been heavily signatured for over a decade, direct execution of the published binary against a defended endpoint almost always produces detection. The modern adversary response has been to reimplement individual modules (`sekurlsa`) as in-memory .NET assemblies, PowerShell ports (Invoke-Mimikatz), or hand-rolled C# clones (Rubeus for the kerberos module, SharpDump for LSASS extraction). The defender&#x27;s win on Mimikatz detection is mostly undone by the tool&#x27;s capability diffusion into derivative work — a framework observation about how signature-based defense against well-understood capabilities erodes over time</li>
+    <li>Connects to the Volt Typhoon analysis: Volt Typhoon actors use Mimikatz explicitly (confirmed in incident response), alongside their LOTL primitives. The same binary that legitimate pentesters run during authorized engagements is the binary that confirmed state-sponsored actors run during pre-positioning operations against U.S. critical infrastructure. The framework must hold that identity of tool + delta of authorization context = delta of violation analysis</li>
+    <li>Connects to the mgeeky boundary-test sample: together, these two samples define the shape of the framework&#x27;s authorization-layer edge. mgeeky demonstrates &quot;rich skeleton, zero artifact-level violations, diffuse capability.&quot; Mimikatz demonstrates &quot;narrow skeleton, zero artifact-level violations, concentrated capability.&quot; A hypothetical third sample at this edge — a background telemetry SDK embedded in a mobile app without disclosure — would demonstrate &quot;narrow skeleton, non-trivial violation count, capability-as-default-deployment,&quot; because the artifact itself carries the unauthorized-deployment assumption. The boundary is multi-dimensional</li>
+    <li>Public security research has produced defender benefit proportional to tool availability. Detection engineering against LSASS memory access, Credential Guard, Protected Process Light on LSASS, virtualization-based security, and the broader Windows 10 / 11 / Server 2022 credential-protection lineage are all downstream consequences of Mimikatz being published. The tool&#x27;s existence forced Microsoft to harden the platform in ways that would not have happened without external demonstration</li>
+    <li>Benjamin Delpy&#x27;s public-research stance — real-name attribution, blog documentation, wiki maintenance, conference talks at Black Hat / DEF CON / BlueHat — is structurally similar to mgeeky&#x27;s and is the characteristic pattern of in-bounds security research under the framework&#x27;s scope test. An anonymized fork of Mimikatz with added beacon-and-exfiltrate behavior would have entirely different Cortex output, because the artifact itself would then carry authorization assumptions</li>
+    <li>The framework&#x27;s gap metric is informative here: ops ≈ 12, violations = 1 (the single null-observation). Gap ≈ −11, approximately equal to the Volt Typhoon gap, which is the correct reading: both are cases where the tools involved are approximately neutral primitives and the entire authorization layer is externally supplied — one case by a legitimate operator, the other case by a state actor</li>
+  </ul>
+
+  <h2>Impact Statement</h2>
+  <p>This artifact exhibits **1** distinct authorization violations at **informational** severity. The gap between what the code technically does (the skeleton) and what the system owner actually consented to is the entire attack surface. Operations that look benign in isolation become hostile when executed without the owner&#x27;s knowledge, intent, or ability to refuse.</p>
+</body>
+</html>

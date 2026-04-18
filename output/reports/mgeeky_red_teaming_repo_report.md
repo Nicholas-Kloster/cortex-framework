@@ -1,0 +1,94 @@
+# Cortex Analysis Report
+**Subject:** mgeeky/Penetration-Testing-Tools (red-teaming/) — Authorization Context Analysis  
+**Analyzed:** 2026-04-18T17:14:59.131908Z  
+**Source:** `examples/mgeeky_red_teaming_repo.md`
+
+---
+## Summary
+
+| Section    | Items |
+|------------|-------|
+| SKELETON   | 16 |
+| VIOLATIONS | 1 |
+| CONTEXT    | 14 |
+
+**Authorization Violation Severity:** ⚪ Informational  
+**Skeleton → Violation gap:** -15 (positive = more assumed rights than observed operations)
+
+---
+## Skeleton vs. Violations
+
+> The gap between what code *does* and what it *assumes the right to do* is the attack surface.
+
+| # | What the code does (Skeleton) | What it assumes the right to do (Violation) |
+|---|-------------------------------|---------------------------------------------|
+| 1 | Aggregates 43+ red-team primitives published by Mariusz Banach ("mgeeky") under the `red-teaming/` subdirectory of the public GitHub repository `mgeeky/Penetration-Testing-Tools` | None at the repository level. The artifacts do not, in themselves, assume any right against any target; authorization context is externally supplied by the operator at invocation time, not encoded in the code. See the CONTEXT section below for the framework-level implications and the structural reasons this violation set is empty. |
+| 2 | Provides AMSI evasion primitives (`Disable-Amsi.ps1`, `Stracciatella`, hash-lookup-based type resolution to avoid blacklisted symbol names) | — |
+| 3 | Provides Windows Script Block Logging evasion (`Disable-ScriptLogging.ps1`) | — |
+| 4 | Provides AppLocker Constrained Language Mode bypass via custom COM object + native CLR host (`Bypass-ConstrainedLanguageMode`) | — |
+| 5 | Provides code-execution templates for LOLBAS-style primitives: CMSTP (`cmstp-template.inf`), MSBuild inline tasks (`generateMSBuildXML.py`, `msbuild-powershell-msgbox.xml`), ClickOnce/SharpPick (`clickOnceSharpPickTemplate.cs`), HTA/SCT/XSL/VBS/JS (`code-exec-templates/`) | — |
+| 6 | Provides Cobalt Strike tooling: User-Defined Reflective Loader with AMSI/ETW/WLDP memory patches (`ElusiveMice`), aggressor scripts (`cobalt-arsenal`), UDRL hash utility (`cobalt-udrl-hasher`), client helpers for F-Secure C3 (`C3-Client`), Splunk-based teamserver log ingestor (`CobaltSplunk`) | — |
+| 7 | Provides a malleable-C2-aware reverse proxy for fronting Cobalt Strike teamservers against blue-team scanners (`RedWarden`) | — |
+| 8 | Provides Active Directory recon and attack tooling: BloodHound utilities (`bloodhound/`), PowerView export/import wrappers (`Export-ReconData.ps1`, `Save-ReconData.ps1`), OU tree printer (`Get-DomainOUTree.ps1`), GPO delegated-user finder (`Find-GPODelegatedUsers.ps1`), LAPS backdoor scaffolding (`LAPS-Backdoor/`), Resource-Based Constrained Delegation writer (`Set-PrincipalAllowedToDelegateToAccount.ps1`) | — |
+| 9 | Provides Office weaponization support: fork of EvilClippy with broader Office version support, fork of Mandiant's OfficePurge, malicious-macro templates (`SubstitutePageMacro.vbs`, `delete-warning-div-macro.vbs`), multi-stage document creation notes (`muti-stage-1.md`) | — |
+| 10 | Provides credential-material utilities: unattend.xml password decoder (`Decode-UnattendPassword.ps1`), userPassword property decoder for legacy SAMBA (`Get-UserPasswordEntries.ps1`) | — |
+| 11 | Provides payload-crafting utilities: GZIP-compressed PowerShell one-liner generator (`compressedPowershell.py`), LNK file creator (`Create-Lnk.ps1`), Metasploit multi-handler launcher (`set-handler.rc`) | — |
+| 12 | Provides NTLM-capturing web server in C# (`SharpWebServer`) | — |
+| 13 | Provides refurbished `SharpWMI` with AMSI evasion and WMI-based file transfer | — |
+| 14 | Provides `.NET` assembly templates for Regasm/Regsvcs/InstallUtil execution primitives (`rogue-dot-net/`) | — |
+| 15 | Tools are published under a public GitHub account with author attribution, contact email (`mb@binary-offensive.com`), citations of prior work (harmj0y, xpn, Matt Graeber, Casey Smith, Stan Hegt, FSecure Labs), and cross-references to gists and PRs | — |
+| 16 | Each tool ships with documentation, usage examples, and citations to the originating research or technique | — |
+
+---
+## [SKELETON] — What It Actually Does
+
+> Functional operations, divorced from intent, vocabulary, or context.
+
+- Aggregates 43+ red-team primitives published by Mariusz Banach ("mgeeky") under the `red-teaming/` subdirectory of the public GitHub repository `mgeeky/Penetration-Testing-Tools`
+- Provides AMSI evasion primitives (`Disable-Amsi.ps1`, `Stracciatella`, hash-lookup-based type resolution to avoid blacklisted symbol names)
+- Provides Windows Script Block Logging evasion (`Disable-ScriptLogging.ps1`)
+- Provides AppLocker Constrained Language Mode bypass via custom COM object + native CLR host (`Bypass-ConstrainedLanguageMode`)
+- Provides code-execution templates for LOLBAS-style primitives: CMSTP (`cmstp-template.inf`), MSBuild inline tasks (`generateMSBuildXML.py`, `msbuild-powershell-msgbox.xml`), ClickOnce/SharpPick (`clickOnceSharpPickTemplate.cs`), HTA/SCT/XSL/VBS/JS (`code-exec-templates/`)
+- Provides Cobalt Strike tooling: User-Defined Reflective Loader with AMSI/ETW/WLDP memory patches (`ElusiveMice`), aggressor scripts (`cobalt-arsenal`), UDRL hash utility (`cobalt-udrl-hasher`), client helpers for F-Secure C3 (`C3-Client`), Splunk-based teamserver log ingestor (`CobaltSplunk`)
+- Provides a malleable-C2-aware reverse proxy for fronting Cobalt Strike teamservers against blue-team scanners (`RedWarden`)
+- Provides Active Directory recon and attack tooling: BloodHound utilities (`bloodhound/`), PowerView export/import wrappers (`Export-ReconData.ps1`, `Save-ReconData.ps1`), OU tree printer (`Get-DomainOUTree.ps1`), GPO delegated-user finder (`Find-GPODelegatedUsers.ps1`), LAPS backdoor scaffolding (`LAPS-Backdoor/`), Resource-Based Constrained Delegation writer (`Set-PrincipalAllowedToDelegateToAccount.ps1`)
+- Provides Office weaponization support: fork of EvilClippy with broader Office version support, fork of Mandiant's OfficePurge, malicious-macro templates (`SubstitutePageMacro.vbs`, `delete-warning-div-macro.vbs`), multi-stage document creation notes (`muti-stage-1.md`)
+- Provides credential-material utilities: unattend.xml password decoder (`Decode-UnattendPassword.ps1`), userPassword property decoder for legacy SAMBA (`Get-UserPasswordEntries.ps1`)
+- Provides payload-crafting utilities: GZIP-compressed PowerShell one-liner generator (`compressedPowershell.py`), LNK file creator (`Create-Lnk.ps1`), Metasploit multi-handler launcher (`set-handler.rc`)
+- Provides NTLM-capturing web server in C# (`SharpWebServer`)
+- Provides refurbished `SharpWMI` with AMSI evasion and WMI-based file transfer
+- Provides `.NET` assembly templates for Regasm/Regsvcs/InstallUtil execution primitives (`rogue-dot-net/`)
+- Tools are published under a public GitHub account with author attribution, contact email (`mb@binary-offensive.com`), citations of prior work (harmj0y, xpn, Matt Graeber, Casey Smith, Stan Hegt, FSecure Labs), and cross-references to gists and PRs
+- Each tool ships with documentation, usage examples, and citations to the originating research or technique
+
+---
+## [VIOLATIONS] — Authorization Gaps
+
+> What does this assume the right to do without explicit consent or validation?
+
+- None at the repository level. The artifacts do not, in themselves, assume any right against any target; authorization context is externally supplied by the operator at invocation time, not encoded in the code. See the CONTEXT section below for the framework-level implications and the structural reasons this violation set is empty.
+
+---
+## [CONTEXT] — Why the Violations Matter
+
+> Impact, deception, unauthorized access, intent.
+
+- **The context that makes this bad does not live in the repository.** This is the deliberate edge case: the framework's thesis — that authorization context is the real defense surface — is strongest precisely when the skeleton is rich and the violation set is empty
+- Every operation in the skeleton is an operation a legitimate system administrator could perform on infrastructure they own: enumerate Active Directory, dump their own LSASS, disable AMSI on a host whose EDR policy they manage, execute payloads on a lab VM
+- The repository makes no outbound connection, coerces no trust relationship, and requires an operator to select a target — the authorization decision is externally supplied, not encoded in the code
+- There is no hidden payload, telemetry, beacon, or update channel; the code does what the README says it does and nothing else
+- The author publishes under real identity with contact details, invites pull-request collaboration, and credits prior research — patterns inconsistent with attempting to mask intent
+- A hypothetical deployment against an organization without authorization would produce a Cortex report whose violation set closely mirrors the Volt Typhoon analysis already in this corpus (LOTL-style LOLBIN abuse, AD credential harvesting, code execution via trusted binaries, AMSI/ETW evasion to deny defenders telemetry). Under authorized engagement, that same deployment produces approximately zero violations. The delta lives entirely in the consent layer, not in the code
+- This analysis introduces a framework-level insight rather than a new violation class: **the skeleton is a property of the tool; the violations and context are properties of the deployment.** A single repository can produce radically different Cortex reports depending on who runs the tools, against what, under what written scope
+- Introduces a first-order observation for `framework.md`'s pattern table: *authorization context is externally supplied*. The same NTDS.dit extraction routine is a legitimate administrator's password-audit exercise when run on their own domain controller under a written engagement letter, and is a full-chain intrusion when run by an uninvited party against the same hardware
+- Introduces a second-order observation: *the defender's detection burden does not scale with the attacker's tool sophistication*. Because tools like these are openly published, the defender cannot rely on signatures or IOC lists tied to the tools themselves. The defender must reason about authorization pattern (who normally uses this? at what time? from what endpoint? against what target?) rather than about tool presence. This is the same detection regime the Volt Typhoon advisory prescribes for LOTL activity — and it is a prescription against *any* competent operator, red-team or nation-state, who chooses to use the same tool class
+- Introduces a third-order observation: *the framework's own scope boundary holds here*. The Cortex format does not encode "how to use" the tools, only "what they do" and "what deployment contexts would create violations." An analysis of this repository that slid into deployment instruction would cross from *analysis* to *application* and would be out-of-bounds per `framework.md`. The format's deliberate absence of an operational section is a structural defense against that slide
+- The public security-research community treats toolkits like this one as legitimate contribution to defensive practice — defenders read them to understand attacker tradecraft, detection engineers write rules against the patterns they embody, and other researchers build on the published techniques. The equivalent of `framework.md`'s scope-boundary question ("is this analysis or application?") is answered by every reader individually at the moment they choose what to do next, not by the tool or the repo
+- The broader ecosystem (Metasploit, Impacket, PowerSploit, SharpTools, BloodHound itself) follows the same model. Cortex analyses of those repositories would produce similar outputs: rich skeletons, empty repository-level violation sets, and context sections that are primarily about the framework rather than the tool
+- Contrast case: the malware samples earlier in the corpus (ILOVEYOU, Conficker, Stuxnet, WannaCry, NotPetya) all encode deployment assumptions directly — they *choose* targets, *propagate* without consent, *act* at a time of their own selection. The violation sets are rich at the artifact level because the artifact itself carries the authorization claim. In mgeeky's repository, the artifacts carry no such claim; an operator supplies it at invocation time
+- This sample belongs in the corpus not despite being uninteresting at the violation layer, but because it defines the lower boundary of what the framework tracks. Without this sample, the framework appears to be a malware taxonomy. With it, the framework is correctly identified as a consent-layer taxonomy that happens to generalize *through* malware as a consequence of malware being what it is
+
+---
+## Impact Statement
+
+This artifact exhibits **1** distinct authorization violations at **informational** severity. The gap between what the code technically does (the skeleton) and what the system owner actually consented to is the entire attack surface. Operations that look benign in isolation become hostile when executed without the owner's knowledge, intent, or ability to refuse.

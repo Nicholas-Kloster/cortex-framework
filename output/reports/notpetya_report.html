@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NotPetya (June 2017) — Authorization Context Analysis — Cortex Report</title>
+<style>
+:root { color-scheme: dark; }
+body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width: 960px;
+       margin: 2rem auto; padding: 0 1rem; background:#0d1117; color:#e6edf3; }
+h1, h2 { border-bottom:1px solid #30363d; padding-bottom:.3rem; }
+code, pre { background:#161b22; padding:.1rem .3rem; border-radius:4px; }
+table { border-collapse: collapse; width:100%; margin: 1rem 0; }
+th, td { border:1px solid #30363d; padding:.5rem .6rem; vertical-align: top; text-align:left; }
+th { background:#161b22; }
+blockquote { color:#8b949e; border-left:3px solid #30363d; margin:.5rem 0; padding:.2rem .8rem; }
+.sev-critical { color:#ff6b6b; font-weight:700; }
+.sev-high     { color:#ff6b6b; font-weight:700; }
+.sev-medium   { color:#ffb86c; font-weight:600; }
+.sev-low      { color:#f1fa8c; }
+.sev-informational { color:#6272a4; }
+.meta { color:#8b949e; font-size:.9rem; }
+ul li { margin:.2rem 0; }
+</style>
+</head>
+<body>
+  <h1>Cortex Analysis Report</h1>
+  <p class="meta"><strong>Subject:</strong> NotPetya (June 2017) — Authorization Context Analysis<br>
+  <strong>Analyzed:</strong> 2026-04-18T17:14:59.219985Z<br>
+  <strong>Source:</strong> <code>examples/notpetya.md</code></p>
+
+  <h2>Summary</h2>
+  <ul>
+    <li>Severity: <span class="sev-critical">🔴 Critical</span></li>
+    <li>Operations (skeleton): 12</li>
+    <li>Authorization violations: 11</li>
+    <li>Context notes: 13</li>
+    <li>Skeleton → Violation gap: -1</li>
+  </ul>
+
+  <h2>Skeleton vs. Violations</h2>
+  <blockquote>The gap between what code <em>does</em> and what it <em>assumes the right to do</em> is the attack surface.</blockquote>
+  <table>
+    <thead><tr><th>#</th><th>Skeleton</th><th>Violation</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Initial delivery via compromised update server for M.E.Doc, a Ukrainian tax and accounting software package with mandatory use by Ukrainian businesses</td><td>Assumes right to inherit a trusted software vendor&#x27;s update channel as a delivery mechanism</td></tr>
+      <tr><td>2</td><td>Signs the trojanized M.E.Doc update with the vendor&#x27;s legitimate update infrastructure, inheriting the vendor&#x27;s trust relationship</td><td>Assumes right to weaponize a mandatory-use national software package against the population legally required to run it</td></tr>
+      <tr><td>3</td><td>Propagates laterally using ETERNALBLUE (CVE-2017-0144) and ETERNALROMANCE (CVE-2017-0145) SMB vulnerabilities</td><td>Assumes right to execute code via trusted update signatures on systems that have no opt-out</td></tr>
+      <tr><td>4</td><td>Propagates laterally using credential harvesting derived from Mimikatz-style LSASS memory extraction</td><td>Assumes right to laterally traverse networks using multiple unpatched SMB vulnerabilities in parallel</td></tr>
+      <tr><td>5</td><td>Propagates laterally via Windows Management Instrumentation (WMIC) and PsExec using harvested credentials</td><td>Assumes right to harvest credentials from system memory to impersonate any user the host can authenticate as</td></tr>
+      <tr><td>6</td><td>Modifies the Master Boot Record (MBR) on infected hosts to replace normal boot with a fake CHKDSK screen</td><td>Assumes right to destroy the boot sector and file system metadata of any reachable host</td></tr>
+      <tr><td>7</td><td>Encrypts the Master File Table (MFT) of the NTFS volume, rendering the filesystem unmountable</td><td>Assumes right to masquerade as ransomware while operating as a destroyer — claiming a recovery contract that cannot exist</td></tr>
+      <tr><td>8</td><td>Displays a ransom note demanding $300 in Bitcoin and instructing victims to email a single hardcoded address</td><td>Assumes right to publish a payment contact known to be fragile, ensuring even willing victims cannot attempt recovery</td></tr>
+      <tr><td>9</td><td>Generates per-victim &quot;installation keys&quot; that are cryptographic noise, not actual key material — no recovery path exists even with the operator&#x27;s cooperation</td><td>Assumes right to inflict global collateral damage in pursuit of a targeted geopolitical objective against Ukraine</td></tr>
+      <tr><td>10</td><td>The email contact address used for payment coordination was disabled by the hosting provider within hours of the outbreak</td><td>Assumes right to operate under a false criminal frame to obscure state attribution</td></tr>
+      <tr><td>11</td><td>Does not exfiltrate or catalog victims; does not maintain a decryption key database</td><td>Zero authorization checks at any layer; zero scope discipline; zero recovery path</td></tr>
+      <tr><td>12</td><td>Wipes its own artifacts from the infected host after execution</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h2>[SKELETON] — What It Actually Does</h2>
+  <ul>
+    <li>Initial delivery via compromised update server for M.E.Doc, a Ukrainian tax and accounting software package with mandatory use by Ukrainian businesses</li>
+    <li>Signs the trojanized M.E.Doc update with the vendor&#x27;s legitimate update infrastructure, inheriting the vendor&#x27;s trust relationship</li>
+    <li>Propagates laterally using ETERNALBLUE (CVE-2017-0144) and ETERNALROMANCE (CVE-2017-0145) SMB vulnerabilities</li>
+    <li>Propagates laterally using credential harvesting derived from Mimikatz-style LSASS memory extraction</li>
+    <li>Propagates laterally via Windows Management Instrumentation (WMIC) and PsExec using harvested credentials</li>
+    <li>Modifies the Master Boot Record (MBR) on infected hosts to replace normal boot with a fake CHKDSK screen</li>
+    <li>Encrypts the Master File Table (MFT) of the NTFS volume, rendering the filesystem unmountable</li>
+    <li>Displays a ransom note demanding $300 in Bitcoin and instructing victims to email a single hardcoded address</li>
+    <li>Generates per-victim &quot;installation keys&quot; that are cryptographic noise, not actual key material — no recovery path exists even with the operator&#x27;s cooperation</li>
+    <li>The email contact address used for payment coordination was disabled by the hosting provider within hours of the outbreak</li>
+    <li>Does not exfiltrate or catalog victims; does not maintain a decryption key database</li>
+    <li>Wipes its own artifacts from the infected host after execution</li>
+  </ul>
+
+  <h2>[VIOLATIONS] — Authorization Gaps</h2>
+  <ul>
+    <li>Assumes right to inherit a trusted software vendor&#x27;s update channel as a delivery mechanism</li>
+    <li>Assumes right to weaponize a mandatory-use national software package against the population legally required to run it</li>
+    <li>Assumes right to execute code via trusted update signatures on systems that have no opt-out</li>
+    <li>Assumes right to laterally traverse networks using multiple unpatched SMB vulnerabilities in parallel</li>
+    <li>Assumes right to harvest credentials from system memory to impersonate any user the host can authenticate as</li>
+    <li>Assumes right to destroy the boot sector and file system metadata of any reachable host</li>
+    <li>Assumes right to masquerade as ransomware while operating as a destroyer — claiming a recovery contract that cannot exist</li>
+    <li>Assumes right to publish a payment contact known to be fragile, ensuring even willing victims cannot attempt recovery</li>
+    <li>Assumes right to inflict global collateral damage in pursuit of a targeted geopolitical objective against Ukraine</li>
+    <li>Assumes right to operate under a false criminal frame to obscure state attribution</li>
+    <li>Zero authorization checks at any layer; zero scope discipline; zero recovery path</li>
+  </ul>
+
+  <h2>[CONTEXT] — Why the Violations Matter</h2>
+  <ul>
+    <li>Most expensive cyberattack in history at the time — estimated $10B+ in damages globally</li>
+    <li>Maersk lost ~$300M and had to rebuild 45,000 PCs, 4,000 servers, and 2,500 applications from a single surviving Active Directory replica recovered from Ghana</li>
+    <li>Merck lost ~$870M including production disruption and lost sales; Reckitt Benckiser lost ~$130M; FedEx/TNT lost ~$400M; Mondelez lost ~$100M</li>
+    <li>Insurance carriers invoked war-exclusion clauses to deny coverage, triggering multi-year litigation (Mondelez v. Zurich, Merck v. ACE) that reshaped cyber insurance doctrine</li>
+    <li>Masqueraded as ransomware but was a destroyer — the ransom UI was a disguise, not a contract; no amount of payment could recover affected systems</li>
+    <li>Surfaces a violation class not yet in the corpus: *pretense violation* — the attacker lies about what the artifact is, operating under a false frame to confuse attribution and delay response</li>
+    <li>Supply-chain trust inheritance via M.E.Doc — victims had no option to refuse the compromised update because M.E.Doc was legally mandated; the trust relationship was not voluntary</li>
+    <li>Targeted Ukraine during an active geopolitical conflict (Russia-Ukraine), with global spread as either collateral damage or plausible-deniability camouflage</li>
+    <li>Attribution by US, UK, Australia, Canada, New Zealand, and Denmark to GRU Unit 74455 (Sandworm); Russia denied involvement and no consequences were imposed for years</li>
+    <li>Establishes that state-sponsored operations can achieve massive global economic damage while hiding behind a criminal costume</li>
+    <li>Reveals a second new violation class: *mandatory-software supply chain abuse* — when a jurisdiction requires use of a specific package, the trust relationship ceases to be consensual, and compromising that package becomes population-scale targeting</li>
+    <li>Previews the xz-utils pattern: the most dangerous supply-chain attacks are not technical zero-days but trust-relationship inheritance at update boundaries</li>
+    <li>Full recovery for many victims required rebuilding from bare metal; some data was unrecoverable and represented permanent loss of historical business records</li>
+  </ul>
+
+  <h2>Impact Statement</h2>
+  <p>This artifact exhibits **11** distinct authorization violations at **critical** severity. The gap between what the code technically does (the skeleton) and what the system owner actually consented to is the entire attack surface. Operations that look benign in isolation become hostile when executed without the owner&#x27;s knowledge, intent, or ability to refuse.</p>
+</body>
+</html>

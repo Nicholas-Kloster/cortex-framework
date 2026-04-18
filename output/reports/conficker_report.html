@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Conficker Worm (2008) — Authorization Context Analysis — Cortex Report</title>
+<style>
+:root { color-scheme: dark; }
+body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width: 960px;
+       margin: 2rem auto; padding: 0 1rem; background:#0d1117; color:#e6edf3; }
+h1, h2 { border-bottom:1px solid #30363d; padding-bottom:.3rem; }
+code, pre { background:#161b22; padding:.1rem .3rem; border-radius:4px; }
+table { border-collapse: collapse; width:100%; margin: 1rem 0; }
+th, td { border:1px solid #30363d; padding:.5rem .6rem; vertical-align: top; text-align:left; }
+th { background:#161b22; }
+blockquote { color:#8b949e; border-left:3px solid #30363d; margin:.5rem 0; padding:.2rem .8rem; }
+.sev-critical { color:#ff6b6b; font-weight:700; }
+.sev-high     { color:#ff6b6b; font-weight:700; }
+.sev-medium   { color:#ffb86c; font-weight:600; }
+.sev-low      { color:#f1fa8c; }
+.sev-informational { color:#6272a4; }
+.meta { color:#8b949e; font-size:.9rem; }
+ul li { margin:.2rem 0; }
+</style>
+</head>
+<body>
+  <h1>Cortex Analysis Report</h1>
+  <p class="meta"><strong>Subject:</strong> Conficker Worm (2008) — Authorization Context Analysis<br>
+  <strong>Analyzed:</strong> 2026-04-18T17:14:59.004360Z<br>
+  <strong>Source:</strong> <code>examples/conficker.md</code></p>
+
+  <h2>Summary</h2>
+  <ul>
+    <li>Severity: <span class="sev-critical">🔴 Critical</span></li>
+    <li>Operations (skeleton): 12</li>
+    <li>Authorization violations: 12</li>
+    <li>Context notes: 11</li>
+    <li>Skeleton → Violation gap: +0</li>
+  </ul>
+
+  <h2>Skeleton vs. Violations</h2>
+  <blockquote>The gap between what code <em>does</em> and what it <em>assumes the right to do</em> is the attack surface.</blockquote>
+  <table>
+    <thead><tr><th>#</th><th>Skeleton</th><th>Violation</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Exploits MS08-067 (Windows Server Service buffer overflow) for remote code execution</td><td>Assumes right to exploit OS vulnerability to gain execution without any user interaction</td></tr>
+      <tr><td>2</td><td>Disables Windows Automatic Update service</td><td>Assumes right to disable host security mechanisms (Defender, Security Center, Windows Update)</td></tr>
+      <tr><td>3</td><td>Disables Windows Security Center and Windows Defender</td><td>Assumes right to modify DNS resolution behavior system-wide</td></tr>
+      <tr><td>4</td><td>Blocks DNS resolution for security vendor domains</td><td>Assumes right to block owner&#x27;s access to security resources and patches</td></tr>
+      <tr><td>5</td><td>Downloads and executes arbitrary code from generated domain names (DGA)</td><td>Assumes right to brute-force credentials on network shares belonging to other systems</td></tr>
+      <tr><td>6</td><td>Generates pseudo-random domain names daily using date as seed (Domain Generation Algorithm)</td><td>Assumes right to write to removable media and modify autorun behavior</td></tr>
+      <tr><td>7</td><td>Propagates via network shares using password brute-force</td><td>Assumes right to establish persistent outbound C2 communication</td></tr>
+      <tr><td>8</td><td>Propagates via removable media (autorun.inf injection)</td><td>Assumes right to map and traverse the local network</td></tr>
+      <tr><td>9</td><td>Patches MS08-067 on infected hosts to block competing malware</td><td>Assumes right to download and execute arbitrary remote code at attacker&#x27;s direction</td></tr>
+      <tr><td>10</td><td>Establishes peer-to-peer C2 network across infected hosts</td><td>Assumes right to modify OS internals to maintain exclusive infection (patches vulnerability for self-protection)</td></tr>
+      <tr><td>11</td><td>Polls generated domains for updated payload instructions</td><td>Zero user interaction required for propagation after initial infection vector</td></tr>
+      <tr><td>12</td><td>Enumerates and maps local network topology</td><td>Actively works to prevent owner from regaining control (update/AV blocking)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>[SKELETON] — What It Actually Does</h2>
+  <ul>
+    <li>Exploits MS08-067 (Windows Server Service buffer overflow) for remote code execution</li>
+    <li>Disables Windows Automatic Update service</li>
+    <li>Disables Windows Security Center and Windows Defender</li>
+    <li>Blocks DNS resolution for security vendor domains</li>
+    <li>Downloads and executes arbitrary code from generated domain names (DGA)</li>
+    <li>Generates pseudo-random domain names daily using date as seed (Domain Generation Algorithm)</li>
+    <li>Propagates via network shares using password brute-force</li>
+    <li>Propagates via removable media (autorun.inf injection)</li>
+    <li>Patches MS08-067 on infected hosts to block competing malware</li>
+    <li>Establishes peer-to-peer C2 network across infected hosts</li>
+    <li>Polls generated domains for updated payload instructions</li>
+    <li>Enumerates and maps local network topology</li>
+  </ul>
+
+  <h2>[VIOLATIONS] — Authorization Gaps</h2>
+  <ul>
+    <li>Assumes right to exploit OS vulnerability to gain execution without any user interaction</li>
+    <li>Assumes right to disable host security mechanisms (Defender, Security Center, Windows Update)</li>
+    <li>Assumes right to modify DNS resolution behavior system-wide</li>
+    <li>Assumes right to block owner&#x27;s access to security resources and patches</li>
+    <li>Assumes right to brute-force credentials on network shares belonging to other systems</li>
+    <li>Assumes right to write to removable media and modify autorun behavior</li>
+    <li>Assumes right to establish persistent outbound C2 communication</li>
+    <li>Assumes right to map and traverse the local network</li>
+    <li>Assumes right to download and execute arbitrary remote code at attacker&#x27;s direction</li>
+    <li>Assumes right to modify OS internals to maintain exclusive infection (patches vulnerability for self-protection)</li>
+    <li>Zero user interaction required for propagation after initial infection vector</li>
+    <li>Actively works to prevent owner from regaining control (update/AV blocking)</li>
+  </ul>
+
+  <h2>[CONTEXT] — Why the Violations Matter</h2>
+  <ul>
+    <li>Infection requires zero user consent — exploits unpatched systems without interaction</li>
+    <li>Systematically removes the owner&#x27;s ability to detect or remediate the infection</li>
+    <li>Blocking security updates and AV domains leaves the host permanently degraded even post-removal</li>
+    <li>DGA-based C2 makes takedown exceptionally difficult — attacker rotates domains faster than defenders can block</li>
+    <li>Brute-forcing network shares extends unauthorized access to systems beyond the originally infected host</li>
+    <li>Peer-to-peer C2 eliminates single point of failure — no central server to shut down</li>
+    <li>Estimated 9–15 million machines infected across government, military, business, and consumer systems</li>
+    <li>Patching MS08-067 on infected hosts demonstrates deliberate owner-exclusion: attacker maintains sole access</li>
+    <li>Removable media propagation jumps air-gapped or network-isolated systems</li>
+    <li>Full network topology mapping gives attacker persistent intelligence about victim infrastructure</li>
+    <li>Represents a platform, not just a worm — designed to maintain a controllable botnet, not just spread</li>
+  </ul>
+
+  <h2>Impact Statement</h2>
+  <p>This artifact exhibits **12** distinct authorization violations at **critical** severity. The gap between what the code technically does (the skeleton) and what the system owner actually consented to is the entire attack surface. Operations that look benign in isolation become hostile when executed without the owner&#x27;s knowledge, intent, or ability to refuse.</p>
+</body>
+</html>

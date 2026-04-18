@@ -1,0 +1,57 @@
+{
+  "analysis_name": "XZ-Utils Backdoor (CVE-2024-3094, disclosed March 2024) — Authorization Context Analysis",
+  "source_file": "examples/xz_utils_backdoor.md",
+  "analyzed_at": "2026-04-18T17:14:59.516858Z",
+  "skeleton": [
+    "An account under the identity \"JiaT75\" / \"Jia Tan\" contributes to the xz-utils / liblzma project beginning in 2021, builds a track record of helpful commits over approximately two years, and is promoted to co-maintainer status in 2023",
+    "Accounts later assessed as likely sockpuppets (notably \"Jigar Kumar\" and \"Dennis Ens\") post public pressure on the xz mailing list, questioning maintainer Lasse Collin's responsiveness and advocating for additional maintainers with commit rights",
+    "Collin, publicly struggling with long-term burnout and mental-health constraints, adds Jia Tan as co-maintainer; Jia Tan subsequently takes on release-signing and upload responsibilities",
+    "Jia Tan publishes xz 5.6.0 (2024-02-24) and 5.6.1 (2024-03-09) release tarballs containing a backdoor not present in the public git repository — the malicious content ships only in the generated release artifacts",
+    "Places the malicious payload in two binary test files (`tests/files/bad-3-corrupt_lzma2.xz` and `tests/files/good-large_compressed.lzma`) added in commit `cf44e4b7`, disguised as corrupt / compressed test fixtures that are never actually used in the project's test runs",
+    "Injects an obfuscated shell script into the tarball-only `m4/build-to-host.m4` file, which executes during the `configure` phase and modifies the `Makefile` to extract the payload from the test files via `sed`, `tr`, and `xz -d`, piping the output into `/bin/bash`",
+    "The decoded payload hijacks liblzma's indirect-function (`ifunc`) resolvers for `crc32_resolve` and `crc64_resolve` to gain control-flow when liblzma is loaded",
+    "Installs an audit hook into the dynamic linker that monitors symbol resolution in the host process",
+    "Applies environment-based gating to execute only when the loading process matches a narrow profile: x86-64 Linux, GCC + GNU linker, Debian/RPM build context, `argv[0] == /usr/sbin/sshd`, `TERM` unset, `LANG` set",
+    "Hooks into sshd indirectly: OpenSSH does not link against liblzma, but Debian/Fedora-patched sshd binaries link against `libsystemd` for readiness notifications, and `libsystemd` pulls in liblzma — so loading sshd transitively loads the backdoored liblzma",
+    "Inside the compromised sshd process, the backdoor redirects `RSA_public_decrypt@plt` to malicious code during public-key authentication",
+    "The hooked `RSA_public_decrypt` checks the presented RSA certificate for a payload signed with an attacker-controlled Ed448 key; if the signature verifies, the attached payload is executed as pre-authentication code running under the sshd process identity; if it does not verify, the normal authentication path continues unchanged",
+    "Maintains full functional operation of xz / liblzma for all non-sshd consumers and for all sshd consumers whose process does not present the attacker's signed RSA key — the package continues to compress, decompress, and pass its test suite normally",
+    "The backdoor is discovered by Microsoft engineer Andres Freund on 2024-03-29 while investigating unexplained CPU usage and valgrind errors during ssh logins on Debian sid, and reported to the `oss-security` mailing list the same day",
+    "Distribution vendors (Red Hat, Debian, Arch, openSUSE, Kali) pull vulnerable releases within 24–48 hours; CVE-2024-3094 is assigned with a CVSS 10.0 base score"
+  ],
+  "violations": [
+    "Assumes right to spend multiple years building a maintainer-track reputation under a fabricated identity purely to position for eventual supply-chain compromise",
+    "Assumes right to manufacture the appearance of community consensus by operating sockpuppet accounts that pressure the real maintainer into ceding control",
+    "Assumes right to exploit a volunteer maintainer's documented mental-health constraints as the social-engineering lever for obtaining commit and release rights",
+    "Assumes right to ship malicious content exclusively in tarball release artifacts while keeping the git repository clean, such that code review of the upstream project could not discover the backdoor",
+    "Assumes right to smuggle the payload inside files deliberately labeled as \"corrupt\" test fixtures, abusing the social convention that test data is low-scrutiny",
+    "Assumes right to insert attacker-controlled shell-script execution into the autotools build chain of a foundational compression library depended on by effectively every Linux distribution",
+    "Assumes right to achieve pre-authentication code execution as root on any sshd that loads the backdoored liblzma through the systemd-notify linkage chain",
+    "Assumes right to gate execution with an attacker-held Ed448 public key so that only the attacker can exploit the backdoor in the field — denying defenders the ability to reproduce the trigger and denying other adversaries the ability to piggyback",
+    "Assumes right to leave the vast majority of users unaffected while holding a silent key to any sshd they run, effectively a latent universal backdoor that activates only on attacker demand",
+    "Assumes right to burn a two-year operation for a single window of exploitation, indicating a threat-model of state-scale patience and state-scale tolerance for discovery risk",
+    "Zero disclosure to anyone in the xz project, the distribution ecosystem, or the users of affected systems; zero consent from any party in the dependency graph"
+  ],
+  "context": [
+    "Introduces a violation class not yet in the corpus: *temporal trust accumulation at the open-source maintainer layer* — the attack consisted primarily of a two-plus-year social operation; the technical payload was the final ~5% of the effort",
+    "Introduces a second new violation class: *weaponization of maintainer burnout and mental-health constraints* — the pressure campaign was deliberately calibrated to exploit a documented vulnerability in the volunteer maintainer's coping capacity, making the social engineering itself a form of targeted harm against Lasse Collin personally",
+    "Introduces a third new violation class: *tarball-only payload placement* — the git repository was clean; auditing the source tree could not have surfaced the backdoor. This inverts the standard open-source trust assumption (\"if it's in git and well-reviewed, it's safe\")",
+    "Introduces a fourth new violation class: *public-key-gated exploitation* — the backdoor is effectively a single-use weapon under the attacker's exclusive control, because only the attacker's Ed448 private key can produce the trigger. This denies defenders reproduction, denies other adversaries piggybacking, and maximizes the attacker's operational security",
+    "Discovered through sheer luck: Freund was not looking for a backdoor, he was investigating performance regressions. The CPU cost of the hooked `RSA_public_decrypt` was ~500ms per failed login attempt, and valgrind surfaced unexpected memory operations. Had the backdoor been more carefully optimized, it could have remained undiscovered for years",
+    "Distribution timing matters: xz 5.6.0 / 5.6.1 had propagated to Debian testing, Fedora 40/41 beta, openSUSE Tumbleweed, Arch, and Kali rolling. Debian stable, Ubuntu LTS, and RHEL release channels had not yet pulled the update. Discovery window was approximately 5 weeks; if the backdoor had reached stable channels, the affected fleet would have numbered in the hundreds of millions",
+    "Reframes the trust model of the modern Linux supply chain: sshd does not link against liblzma, yet the backdoor reached sshd through systemd's notification dependency graph. The attack-relevant dependency is several hops removed from where the attacker planted their code, and the compromise was not reachable by auditing direct dependencies",
+    "Connects directly to SUNBURST's build-pipeline-trust subversion violation but at the inverse end of the trust spectrum: SUNBURST compromised a paid enterprise vendor's signing pipeline; xz compromised a volunteer OSS project with a single burned-out maintainer. The delta between these two attack classes is entirely in the social layer, not the technical one — both end with signed, trusted malicious code reaching production",
+    "Connects to Volt Typhoon's *standing-option occupation* violation class: the xz backdoor, had it shipped to stable distributions, would have been a standing option over a very large fraction of the global Linux sshd fleet, usable on attacker demand",
+    "Demonstrates that the open-source trust model — \"many eyes make bugs shallow,\" \"contributors earn trust through commits,\" \"maintainer consensus is self-regulating\" — contains no structural defense against a patient, well-resourced adversary willing to invest multi-year effort in a single operation",
+    "No state has been publicly attributed; behavior pattern (patience, operational security, linguistic tradecraft across accounts, willingness to burn years of buildup) is consistent with state or state-adjacent tradecraft; public community assessment converges on \"nation-state\" even without formal attribution",
+    "Lasse Collin, as a private individual, has had to navigate being the named maintainer of the most significant OSS supply-chain incident of 2024 while also being the primary victim of the social-engineering operation that produced it — the harm here is not only to downstream users but to a single targeted volunteer"
+  ],
+  "analysis_summary": {
+    "total_operations": 15,
+    "total_violations": 11,
+    "total_context_notes": 12,
+    "skeleton_violation_gap": -4,
+    "severity": "critical"
+  },
+  "parse_warnings": []
+}
