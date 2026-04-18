@@ -27,9 +27,9 @@
 
   <!-- Thesis -->
   <text x="96" y="450" font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
-        font-size="20" fill="#e6edf3">code is label-agnostic.</text>
-  <text x="96" y="484" font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
-        font-size="20" fill="#e6edf3">authorization is the defense surface.</text>
+        font-size="22" font-weight="700" fill="#e6edf3">Operations are neutral.</text>
+  <text x="96" y="486" font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="22" font-weight="700" fill="#e6edf3">Context is what makes it bad.</text>
 
   <!-- Right side: three-part visual -->
   <g font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" transform="translate(660, 210)">

@@ -29,7 +29,10 @@
         font-size="13" fill="#8b949e">AUTHORIZATION CONTEXT ANALYZER</text>
 
   <!-- Accent: thesis line -->
-  <text x="256" y="440" text-anchor="middle"
+  <text x="256" y="436" text-anchor="middle"
         font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
-        font-size="11" fill="#6272a4">code is label-agnostic</text>
+        font-size="11" fill="#e6edf3">Operations are neutral.</text>
+  <text x="256" y="458" text-anchor="middle"
+        font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="11" fill="#6272a4">Context is what makes it bad.</text>
 </svg>

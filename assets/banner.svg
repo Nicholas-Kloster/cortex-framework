@@ -47,7 +47,7 @@
   </g>
 
   <!-- Bottom line: thesis -->
-  <text x="80" y="306" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6272a4" letter-spacing="1">code is label-agnostic · authorization is the defense surface</text>
+  <text x="80" y="306" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" fill="#e6edf3" letter-spacing="1">Operations are neutral · Context is what makes it bad</text>
 
   <!-- Version stamp bottom right -->
   <text x="1120" y="306" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6272a4" letter-spacing="2">v2.0</text>

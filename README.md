@@ -4,6 +4,8 @@
 
 # Cortex — Authorization Context Analyzer
 
+> **Operations are neutral. Context is what makes it bad.**
+
 Cortex helps you describe something — a piece of software, a scam email, any
 behavior — in three parts: **what it does**, **what it took without asking**,
 and **why that matters**.

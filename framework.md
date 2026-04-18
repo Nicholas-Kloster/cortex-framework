@@ -1,5 +1,7 @@
 # Cortex Framework — Authorization Context Analysis
 
+> **Operations are neutral. Context is what makes it bad.**
+
 ## Core Insight
 
 **Code is label-agnostic.**

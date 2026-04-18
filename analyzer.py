@@ -36,7 +36,7 @@ _BANNER_ART = r"""
 """
 
 _BANNER_TAGLINE = "  authorization context analyzer"
-_BANNER_THESIS = "  code is label-agnostic · authorization is the defense surface"
+_BANNER_THESIS = "  operations are neutral · context is what makes it bad"
 
 
 def print_banner(stream=sys.stderr, force: bool = False) -> None:
