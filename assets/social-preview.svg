@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" role="img" aria-label="Cortex — Authorization Context Analyzer">
+  <title>Cortex — Authorization Context Analyzer</title>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="#0d1117"/>
+
+  <!-- Subtle grid -->
+  <g stroke="#161b22" stroke-width="1" opacity="0.85">
+    <path d="M0 80 H1280 M0 160 H1280 M0 240 H1280 M0 320 H1280 M0 400 H1280 M0 480 H1280 M0 560 H1280"/>
+    <path d="M80 0 V640 M160 0 V640 M240 0 V640 M320 0 V640 M400 0 V640 M480 0 V640 M560 0 V640 M640 0 V640 M720 0 V640 M800 0 V640 M880 0 V640 M960 0 V640 M1040 0 V640 M1120 0 V640 M1200 0 V640"/>
+  </g>
+
+  <!-- Terminal prompt -->
+  <text x="96" y="140" font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="24" fill="#56d364">$ cortex</text>
+
+  <!-- Wordmark -->
+  <text x="96" y="300" font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="130" font-weight="700" fill="#e6edf3">CORTEX</text>
+
+  <!-- Tagline -->
+  <text x="96" y="360" font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="22" fill="#8b949e">AUTHORIZATION CONTEXT ANALYZER</text>
+
+  <!-- Divider -->
+  <line x1="96" y1="400" x2="460" y2="400" stroke="#30363d" stroke-width="2"/>
+
+  <!-- Thesis -->
+  <text x="96" y="450" font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="20" fill="#e6edf3">code is label-agnostic.</text>
+  <text x="96" y="484" font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="20" fill="#e6edf3">authorization is the defense surface.</text>
+
+  <!-- Right side: three-part visual -->
+  <g font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" transform="translate(660, 210)">
+    <!-- does -->
+    <rect x="0" y="0" width="150" height="80" fill="#161b22" stroke="#30363d" stroke-width="2" rx="6"/>
+    <text x="75" y="34" text-anchor="middle" font-size="11" fill="#8b949e">WHAT IT</text>
+    <text x="75" y="62" text-anchor="middle" font-size="22" font-weight="700" fill="#e6edf3">DOES</text>
+
+    <!-- arrow + gap label -->
+    <path d="M 158 40 L 200 40" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="5,5"/>
+    <path d="M 196 34 L 208 40 L 196 46 Z" fill="#ff6b6b"/>
+    <text x="182" y="24" text-anchor="middle" font-size="11" fill="#ff6b6b" font-weight="700">GAP</text>
+
+    <!-- claims -->
+    <rect x="216" y="0" width="150" height="80" fill="#1f1416" stroke="#ff6b6b" stroke-width="2" rx="6"/>
+    <text x="291" y="34" text-anchor="middle" font-size="11" fill="#ff6b6b">WHAT IT</text>
+    <text x="291" y="62" text-anchor="middle" font-size="18" font-weight="700" fill="#ff6b6b">CLAIMS</text>
+
+    <!-- arrow -->
+    <path d="M 374 40 L 424 40" stroke="#30363d" stroke-width="2"/>
+    <path d="M 416 34 L 428 40 L 416 46 Z" fill="#30363d"/>
+
+    <!-- matters -->
+    <rect x="432" y="0" width="150" height="80" fill="#161b22" stroke="#30363d" stroke-width="2" rx="6"/>
+    <text x="507" y="34" text-anchor="middle" font-size="11" fill="#8b949e">WHY IT</text>
+    <text x="507" y="62" text-anchor="middle" font-size="18" font-weight="700" fill="#e6edf3">MATTERS</text>
+  </g>
+
+  <!-- Corpus stats strip -->
+  <g font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" transform="translate(660, 380)">
+    <text x="0" y="0" font-size="13" fill="#8b949e">14-SAMPLE REFERENCE CORPUS</text>
+    <text x="0" y="30" font-size="12" fill="#6272a4">· historical worms · supply chain · ICS</text>
+    <text x="0" y="54" font-size="12" fill="#6272a4">· LLM prompt injection · social engineering</text>
+    <text x="0" y="78" font-size="12" fill="#6272a4">· red-team boundary tests</text>
+  </g>
+
+  <!-- Bottom: attribution -->
+  <text x="96" y="600" font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="13" fill="#6272a4">github.com/Nicholas-Kloster/cortex-framework</text>
+  <text x="1184" y="600" text-anchor="end" font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="13" fill="#6272a4">v2.0</text>
+</svg>

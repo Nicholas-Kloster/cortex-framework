@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Cortex logo">
+  <title>Cortex</title>
+
+  <!-- Rounded dark background -->
+  <rect width="512" height="512" fill="#0d1117" rx="64"/>
+
+  <!-- Subtle inner grid -->
+  <g stroke="#161b22" stroke-width="1">
+    <path d="M0 64 H512 M0 128 H512 M0 192 H512 M0 256 H512 M0 320 H512 M0 384 H512 M0 448 H512"/>
+    <path d="M64 0 V512 M128 0 V512 M192 0 V512 M256 0 V512 M320 0 V512 M384 0 V512 M448 0 V512"/>
+  </g>
+
+  <!-- The mark: three bars of varying widths — skeleton / violations / context -->
+  <!-- Middle bar in red carries the authorization-violation accent -->
+  <g transform="translate(256, 180)">
+    <rect x="-110" y="-40" width="220" height="22" fill="#8b949e" rx="3"/>
+    <rect x="-80"  y="-8"  width="160" height="22" fill="#ff6b6b" rx="3"/>
+    <rect x="-130" y="24"  width="260" height="22" fill="#e6edf3" rx="3"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="256" y="340" text-anchor="middle"
+        font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="54" font-weight="700" fill="#e6edf3">CORTEX</text>
+
+  <!-- Tagline -->
+  <text x="256" y="388" text-anchor="middle"
+        font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="13" fill="#8b949e">AUTHORIZATION CONTEXT ANALYZER</text>
+
+  <!-- Accent: thesis line -->
+  <text x="256" y="440" text-anchor="middle"
+        font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="11" fill="#6272a4">code is label-agnostic</text>
+</svg>
