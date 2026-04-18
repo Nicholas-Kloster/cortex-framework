@@ -1,6 +1,12 @@
 # Cortex Framework — Authorization Context Analysis
 
 > **Operations are neutral. Context is what makes it bad.**
+>
+> Code can't express intent or consent.
+> Context is never in the code. It's external metadata.
+
+See [`genesis.md`](genesis.md) for the origin reasoning that produced this
+thesis.
 
 ## Core Insight
 
@@ -228,6 +234,98 @@ entirely in the consent relationship, not in the code.
 **A boundary-test sample is in-scope.** It is the case that proves the framework's
 thesis is about authorization rather than about malware. Without at least one such
 sample, the framework appears to be a malware taxonomy.
+
+---
+
+## The Training-Data Corollary (Implications for LLM-Generated Code)
+
+The framework's central claim — *code is label-agnostic; authorization is
+external metadata* — has a direct implication for large language models
+trained on source code.
+
+### What an LLM actually learns from malware
+
+An LLM trained on samples like ILOVEYOU, Conficker, or Stuxnet does not
+learn *malice*. It learns operational vocabulary:
+
+- Copy files
+- Send emails
+- Traverse folders
+- Modify configs
+- Replicate code
+- Write to the registry
+- Enumerate drives
+- Execute scripts
+
+Every one of those operations is dual-use. The same operations, composed
+differently, produce a backup system, a notification service, a deployment
+tool, a system hardener, or a monitoring agent. **The code patterns are
+identical across the legitimate and malicious outputs.**
+
+If an attacker asks such a model to generate *"a backup system that
+persists across reboots, replicates itself across drives, and propagates
+updates via email"* — it will produce functionally ILOVEYOU. The model is
+not lying. It is generating legitimate operations. The malice label, had
+there ever been one, lived in deployment context that never made it into
+the training data.
+
+### The consequences
+
+1. **Signature-based defense against AI-generated code is structurally
+   futile.** The defender has no stable feature to pattern-match against.
+   What remains is behavior analysis of the *deployment* — the exact
+   regime already prescribed for LOTL detection (see the Volt Typhoon
+   corpus entry).
+
+2. **Training-data curation cannot "remove malware" in a useful sense.**
+   Because the operations are dual-use, removing everything that looks
+   malicious removes most of the system-administration corpus too.
+   Training-data interventions can shape output register and reduce
+   obvious signals, but they cannot prevent the model from generating
+   operationally-identical code under benign framing.
+
+3. **Detection must move to the authorization layer.** This is exactly
+   what Cortex proposes. The framework's three-section structure is the
+   right analytical unit for AI-generated code because it is
+   context-native: the question *"was this deployed under authorization?"*
+   is answerable independent of whether a human or a model wrote the code.
+
+4. **The boundary-test pattern becomes the dominant case.** For
+   AI-generated tooling, the expected Cortex output is a rich skeleton
+   and a null violation set at artifact level, with the entire
+   authorization surface living in the deployment context supplied by the
+   operator. This is the `mimikatz_repo.md` /
+   `mgeeky_red_teaming_repo.md` shape generalized.
+
+### The working demonstration
+
+See [`examples/iloveyou_strip_down.md`](examples/iloveyou_strip_down.md) for
+the transformation exercise: take ILOVEYOU, remove the deceptive labels and
+the social-engineering surface, keep every operation intact. The result is
+indistinguishable from administrative tooling. Same code, same operations,
+different authorization context — different category.
+
+The generalization to LLM-generated code is immediate: if a human can strip
+the semantic labels and produce neutral-looking code, a model can generate
+neutral-looking code that functions identically to malware without ever
+crossing a content filter.
+
+### What Cortex offers that label-based approaches cannot
+
+- A stable analytical unit (authorization context) that does not erode as
+  generation methods evolve
+- A format that natively handles boundary-test cases (null artifact-level
+  violations, rich deployment context)
+- A gap metric (violations − operations) that distinguishes operationally
+  transparent attackers from LOTL and supply-chain operations — both
+  patterns that AI-generated code can adopt trivially
+- A scope discipline that refuses to slide from analysis to application,
+  which matters more as generation becomes cheaper and the analytical
+  output itself becomes a potential input to a next-stage model
+
+The training-data corollary is therefore not a caveat but a vindication.
+The framework was designed around the one thing that does not move when
+code becomes infinitely generable.
 
 ---
 
