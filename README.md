@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.svg" alt="Cortex — Authorization Context Analyzer" width="100%">
+</p>
+
 # Cortex — Authorization Context Analyzer
 
 Cortex helps you describe something — a piece of software, a scam email, any

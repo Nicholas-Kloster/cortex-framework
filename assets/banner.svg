@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" width="1200" height="340" role="img" aria-label="Cortex — Authorization Context Analyzer">
+  <title>Cortex — Authorization Context Analyzer</title>
+
+  <!-- Background -->
+  <rect width="1200" height="340" fill="#0d1117"/>
+
+  <!-- Subtle grid -->
+  <g stroke="#161b22" stroke-width="1" opacity="0.9">
+    <path d="M0 40 H1200 M0 80 H1200 M0 120 H1200 M0 160 H1200 M0 200 H1200 M0 240 H1200 M0 280 H1200 M0 320 H1200"/>
+    <path d="M40 0 V340 M120 0 V340 M200 0 V340 M280 0 V340 M360 0 V340 M440 0 V340 M520 0 V340 M600 0 V340 M680 0 V340 M760 0 V340 M840 0 V340 M920 0 V340 M1000 0 V340 M1080 0 V340 M1160 0 V340"/>
+  </g>
+
+  <!-- Terminal-style prompt accent -->
+  <text x="80" y="80" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="22" fill="#56d364">$ cortex</text>
+
+  <!-- Wordmark -->
+  <text x="80" y="200" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="120" font-weight="700" fill="#e6edf3" letter-spacing="6">CORTEX</text>
+
+  <!-- Tagline -->
+  <text x="80" y="246" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="19" fill="#8b949e" letter-spacing="3">AUTHORIZATION · CONTEXT · ANALYZER</text>
+
+  <!-- Right-side three-part visual -->
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" transform="translate(680, 110)">
+    <!-- does -->
+    <rect x="0" y="0" width="140" height="72" fill="#161b22" stroke="#30363d" stroke-width="1.5" rx="4"/>
+    <text x="70" y="30" text-anchor="middle" font-size="11" fill="#8b949e" letter-spacing="2">WHAT IT</text>
+    <text x="70" y="56" text-anchor="middle" font-size="22" font-weight="700" fill="#e6edf3">DOES</text>
+
+    <!-- arrow 1 with "GAP" -->
+    <path d="M 150 36 L 188 36" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="4,4"/>
+    <path d="M 186 31 L 198 36 L 186 41 Z" fill="#ff6b6b"/>
+    <text x="174" y="22" text-anchor="middle" font-size="11" fill="#ff6b6b" letter-spacing="3" font-weight="700">GAP</text>
+
+    <!-- claims (red) -->
+    <rect x="202" y="0" width="140" height="72" fill="#1f1416" stroke="#ff6b6b" stroke-width="1.5" rx="4"/>
+    <text x="272" y="30" text-anchor="middle" font-size="11" fill="#ff6b6b" letter-spacing="2">WHAT IT</text>
+    <text x="272" y="56" text-anchor="middle" font-size="18" font-weight="700" fill="#ff6b6b">CLAIMS</text>
+
+    <!-- arrow 2 -->
+    <path d="M 352 36 L 396 36" stroke="#30363d" stroke-width="1.5"/>
+    <path d="M 388 31 L 400 36 L 388 41 Z" fill="#30363d"/>
+
+    <!-- matters -->
+    <rect x="404" y="0" width="140" height="72" fill="#161b22" stroke="#30363d" stroke-width="1.5" rx="4"/>
+    <text x="474" y="30" text-anchor="middle" font-size="11" fill="#8b949e" letter-spacing="2">WHY IT</text>
+    <text x="474" y="56" text-anchor="middle" font-size="18" font-weight="700" fill="#e6edf3">MATTERS</text>
+  </g>
+
+  <!-- Bottom line: thesis -->
+  <text x="80" y="306" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6272a4" letter-spacing="1">code is label-agnostic · authorization is the defense surface</text>
+
+  <!-- Version stamp bottom right -->
+  <text x="1120" y="306" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6272a4" letter-spacing="2">v2.0</text>
+</svg>
