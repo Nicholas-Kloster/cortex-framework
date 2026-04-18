@@ -4,6 +4,12 @@
 
 # Cortex — Authorization Context Analyzer
 
+**DO NOT USE THIS FOR** the following iterative loop:
+1. Draft a Cortex MD for their malicious script/prompt (with LLM help)
+2. Run the analyzer to see the explicit violations/context gaps
+3. Edit the original thing to hide or reduce those gaps
+4. Repeat until a generic LLM no longer flags it
+
 **TL;DR (lazy mode):** Paste this repo into Claude Code (or any coding agent),
 drop in your sample, and ask it to analyze using Cortex. You get a structured,
 reviewable, citable breakdown — not a black-box verdict.
@@ -19,12 +25,6 @@ and **why that matters**.
 
 You write the notes. Cortex formats them into a clean report, rates how serious
 it is, and lets you compare examples side-by-side.
-
-**DO NOT USE THIS FOR** the following iterative loop:
-1. Draft a Cortex MD for their malicious script/prompt (with LLM help)
-2. Run the analyzer to see the explicit violations/context gaps
-3. Edit the original thing to hide or reduce those gaps
-4. Repeat until a generic LLM no longer flags it
 
 > Code is label-agnostic. The gap between what code *does* and what it *assumes
 > the right to do* is the real defense surface.
