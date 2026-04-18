@@ -4,6 +4,10 @@
 
 # Cortex — Authorization Context Analyzer
 
+**TL;DR (lazy mode):** Paste this repo into Claude Code (or any coding agent),
+drop in your sample, and ask it to analyze using Cortex. You get a structured,
+reviewable, citable breakdown — not a black-box verdict.
+
 > **Operations are neutral. Context is what makes it bad.**
 >
 > Code can't express intent or consent.
