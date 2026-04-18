@@ -22,6 +22,52 @@ from pathlib import Path
 
 
 # ---------------------------------------------------------------------------
+# BANNER
+# ---------------------------------------------------------------------------
+
+VERSION = "2.0"
+
+_BANNER_ART = r"""
+   ____ ___  ____ _____ _______  __
+  / ___/ _ \|  _ \_   _| ____\ \/ /
+ | |  | | | | |_) || | |  _|  \  /
+ | |__| |_| |  _ < | | | |___ /  \
+  \____\___/|_| \_\|_| |_____/_/\_\
+"""
+
+_BANNER_TAGLINE = "  authorization context analyzer"
+_BANNER_THESIS = "  code is label-agnostic · authorization is the defense surface"
+
+
+def print_banner(stream=sys.stderr, force: bool = False) -> None:
+    """Print the banner to `stream` if it's a TTY and colors aren't disabled.
+
+    Honors the NO_COLOR convention (https://no-color.org).
+    Prints to stderr by default so stdout piping remains clean.
+    Pass force=True to print even when the stream is not a TTY.
+    """
+    if not force and not stream.isatty():
+        return
+
+    use_color = stream.isatty() and "NO_COLOR" not in os.environ \
+        and os.environ.get("TERM") != "dumb"
+    if use_color:
+        BOLD = "\033[1m"
+        WHITE = "\033[97m"
+        DIM = "\033[90m"
+        RED = "\033[91m"
+        RESET = "\033[0m"
+    else:
+        BOLD = WHITE = DIM = RED = RESET = ""
+
+    for line in _BANNER_ART.strip("\n").splitlines():
+        stream.write(f"{BOLD}{WHITE}{line}{RESET}\n")
+    stream.write(f"{DIM}{_BANNER_TAGLINE}{RESET}"
+                 f"{RED}{'':>18}v{VERSION}{RESET}\n")
+    stream.write(f"{DIM}{_BANNER_THESIS}{RESET}\n\n")
+
+
+# ---------------------------------------------------------------------------
 # PARSING
 # ---------------------------------------------------------------------------
 
@@ -523,6 +569,11 @@ def cmd_compare(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="cortex",
                                 description="Cortex — Authorization Context Analyzer")
+    p.add_argument("--version", action="version", version=f"cortex {VERSION}")
+    p.add_argument("-q", "--quiet", action="store_true",
+                   help="Suppress the startup banner")
+    p.add_argument("--banner", action="store_true",
+                   help="Force the banner to print even when stderr is not a TTY")
     sub = p.add_subparsers(dest="command", required=True)
 
     a = sub.add_parser("analyze", help="Parse and report on a markdown analysis")
@@ -546,6 +597,10 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = build_parser().parse_args()
+    if args.banner:
+        print_banner(stream=sys.stderr, force=True)
+    elif not args.quiet:
+        print_banner(stream=sys.stderr)
     return {
         "analyze": cmd_analyze,
         "validate": cmd_validate,

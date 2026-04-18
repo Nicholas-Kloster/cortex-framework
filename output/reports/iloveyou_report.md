@@ -1,6 +1,6 @@
 # Cortex Analysis Report
 **Subject:** ILOVEYOU Worm (2000) — Authorization Context Analysis  
-**Analyzed:** 2026-04-18T17:14:59.045563Z  
+**Analyzed:** 2026-04-18T17:34:32.255104Z  
 **Source:** `examples/iloveyou.md`
 
 ---

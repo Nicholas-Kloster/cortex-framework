@@ -1,7 +1,7 @@
 {
   "analysis_name": "ILOVEYOU Worm (2000) — Authorization Context Analysis",
   "source_file": "examples/iloveyou.md",
-  "analyzed_at": "2026-04-18T17:14:59.045563Z",
+  "analyzed_at": "2026-04-18T17:34:32.255104Z",
   "skeleton": [
     "Arrives as email attachment named `LOVE-LETTER-FOR-YOU.TXT.vbs`",
     "Executes as VBScript when opened by user",
