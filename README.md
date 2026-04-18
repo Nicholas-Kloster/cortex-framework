@@ -41,6 +41,43 @@ Outputs land in `output/reports/` by default:
 
 ---
 
+## Using Cortex with a coding agent (Claude Code, Cursor, Aider, Copilot…)
+
+The fastest way to produce a structured analysis of an unknown sample:
+
+1. Clone this repo next to your sample:
+   ```bash
+   git clone https://github.com/Nicholas-Kloster/cortex-framework
+   ```
+2. Paste a prompt like this into your agent:
+
+> Read `framework.md` and a few `examples/*.md` to learn the Cortex format.
+> Then analyze `<path/to/sample>` and write
+> `examples/<short-name>.md` with **SKELETON**, **VIOLATIONS**, **CONTEXT**,
+> and an optional **REFERENCES** section. Then run
+> `python3 analyzer.py analyze examples/<short-name>.md --html`
+> and show me the output.
+
+The agent reads the methodology + sample analyses, drafts a three-section
+Cortex markdown file, and runs the analyzer. You get back:
+
+- A reviewable analysis where every authorization claim is a falsifiable
+  bullet, not an opaque "this looks malicious"
+- Deterministic JSON / markdown / HTML reports from the analyzer
+- Side-by-side comparability against the 14-sample reference corpus
+  (`python3 analyzer.py compare examples/your-sample.md examples/stuxnet.md`)
+- A citable artifact that holds up in a bug report, disclosure writeup, or
+  incident review
+
+The *structure* is enforced by the framework. The *drafting* leverages the
+model. The authorization claims remain falsifiable by any human reviewer
+who reads the resulting markdown.
+
+See [`framework.md`](framework.md) § *Reasoning Transparency* for why this
+beats a black-box LLM "looks malicious" verdict.
+
+---
+
 ## Commands
 
 ### `analyze`
