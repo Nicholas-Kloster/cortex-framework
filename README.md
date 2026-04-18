@@ -20,7 +20,7 @@ and **why that matters**.
 You write the notes. Cortex formats them into a clean report, rates how serious
 it is, and lets you compare examples side-by-side.
 
-In theory someone could do an iterative loop:
+**DO NOT USE THIS FOR** the following iterative loop:
 1. Draft a Cortex MD for their malicious script/prompt (with LLM help)
 2. Run the analyzer to see the explicit violations/context gaps
 3. Edit the original thing to hide or reduce those gaps
