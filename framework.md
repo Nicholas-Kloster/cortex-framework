@@ -329,6 +329,59 @@ code becomes infinitely generable.
 
 ---
 
+## Reasoning Transparency — Why Not Just Use an LLM Classifier?
+
+A fair question: modern LLMs will happily look at code and tell you whether
+it "seems malicious." Why invest in a structured framework?
+
+Because *"seems malicious"* is an opaque verdict. It is not:
+
+- **Reproducible** — different sessions, prompts, and models produce
+  inconsistent labels on the same artifact
+- **Citable** — you cannot point to a specific authorization claim the model
+  disagreed with; the output is categorical, not articulated
+- **Auditable** — there is no surface a reviewer can inspect or challenge
+- **Teachable** — the reasoning is not exposed, so you cannot argue against
+  it or propagate the judgment to a human operator
+
+Cortex replaces the black-box verdict with a structured decomposition:
+
+- The **SKELETON** is an operations list any reader can verify against the
+  source
+- The **VIOLATIONS** are specific authorization claims, each a falsifiable
+  assertion
+- The **CONTEXT** narrates impact, stakeholder, and consent surface
+- **Gap** and **severity** are deterministic functions of those three
+  sections
+
+A reviewer who disagrees with a Cortex analysis can point to a specific
+bullet, argue the authorization claim is wrong, and the analysis updates.
+A black-box "this looks bad" verdict offers no such surface.
+
+### Using LLMs *with* Cortex, not instead of Cortex
+
+A model is a fine drafter. It is a poor final authority on authorization.
+
+The expected workflow: take any of the 14 reference analyses as a template,
+have an LLM help you draft the three sections for a new sample, and run it
+through the analyzer:
+
+```bash
+python3 analyzer.py analyze your-sample.md --html
+```
+
+The model helps you *write*. Cortex makes the *reasoning* reproducible and
+citable in a bug report, a disclosure writeup, or a cross-sample comparison,
+independent of which model or session produced the draft.
+
+This is why Cortex generalizes to AI-generated code (see the Training-Data
+Corollary above). The authorization layer is articulable independent of who
+or what wrote the code. An LLM flag requires the model to decide. A Cortex
+analysis requires the *operator* to decide what they consented to — which is
+the only decision that was ever stable to begin with.
+
+---
+
 ## Severity Heuristic
 
 Severity is a function of violations and context, with a cap for boundary-test
