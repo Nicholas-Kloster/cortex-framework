@@ -1,3 +1,5 @@
+[![Claude Code Friendly](https://img.shields.io/badge/Claude_Code-Friendly-blueviolet?logo=anthropic&logoColor=white)](https://claude.ai/code)
+
 <p align="center">
   <img src="assets/banner.svg" alt="Cortex — Authorization Context Analyzer" width="100%">
 </p>
